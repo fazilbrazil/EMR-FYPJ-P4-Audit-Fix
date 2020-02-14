@@ -1,0 +1,722 @@
+<style>
+    .tabs .indicator{
+        background-color: #6a1b9a;
+    }
+
+    .tabs .tab a:hover, .tabs .tab a.active {
+        background-color: transparent;
+        color: #6a1b9a;
+    }
+</style>
+
+<div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">
+    The Mini Nutritional Assessment Short Form (MNA-SF)
+</div>
+<a class="btn" style="background-color:#6a1b9a" href="https://www.nursingcenter.com/journalarticle?Article_ID=770859&Journal_ID=54030&Issue_ID=770792#P18">Read More</a>
+<br>
+<div style="overflow-x:auto; max-height: 16em;">
+<table id="mnaRecords" class="hover order-column">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Part 1 Score</th>
+            <th>Part 2 Score</th>
+            <th>Total Score</th>
+            {{!-- <th>Patient ID</th> --}}
+            {{#unless userType}}
+            <th>Delete</th>
+            {{/unless}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#if newMNA}}
+            {{#each newMNA}}
+            <tr style="height: 60px">
+                {{#unless ../userType}}
+                <td><a href="/master/mna/{{mnaID}}">{{datetime}}</a></td>
+                {{else}}
+                    <td>
+                        {{#ifCond ../currentUserType 'student'}} <!--If currentUserType == "staff", they can't click on a specific records to edit-->
+                            <a href="/student/mna/{{../recordID}}/{{mnaID}}">{{datetime}}</a>
+                        {{else}}
+                            {{date}}
+                        {{/ifCond}}
+                    </td>
+                {{!-- <td id="editRights{{bradenID}}"></td> --}}
+                {{/unless}}
+                <td id="part1Score">{{screenScore}}</td>     
+                <td id="part2Score">{{assessmentScore}}</td>
+                <td id="totalScore"><b>{{totalScore}}</b></td>
+                {{!-- <td>{{patientID}}</td> --}}
+                {{#unless ../userType}}
+                <td style="width: 55px"> <!-- the tr we're trying to get -->
+						<form action="/master/del-mna/{{mnaID}}?_method=DELETE" method="post" id="delete-form">
+						<input type="hidden" name="_method" value="DELETE">
+						<button type="submit" class="btn red darken-3" form="delete-form">
+							<i class="material-icons">delete</i>
+						</button>
+					    </form>
+				</td>
+                {{/unless}}
+            </tr>
+            {{/each}}		
+        {{else}}
+        <p id="noRecord">You have not created any records yet</p>
+        {{/if}}
+    </tbody>
+</table>
+</div>
+<br>
+
+<br/>
+    <div class="row" style="margin: 0px;">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s6">
+                    <a href="#MNAblock">
+                        Part 1 - Screening
+                        <i class="tiny material-icons tooltip" data-toggle="tooltip" data-placement="right" title="Part 1 is designed to detect psychological stress or acute disease or a decline in eating or weight in the past three months, as well as current mobility or neuropsychological problems and a decrease in body mass index (BMI). The screening score-the score for part 1-can be as high as 14 points. A score of 12 to 14 signifies normal nutritional status and no need for further assessment; 11 or lower indicates possible malnutrition.">info</i>
+                    </a>
+                </li>
+                <li class="tab col s6">
+                    <a href="#MNAblock2">
+                        Part 2 - Assessment
+                        <i class="tiny material-icons tooltip" data-toggle="tooltip" data-placement="right" title="Part 2 determines the presence of polypharmacy or pressure ulcers, the number of full meals eaten daily, the mode of feeding, whether the person lives independently, and the amount and frequency of specific foods and fluids. The patient reports nutritional and health status, and the practitioner determines midarm and midcalf circumferences. The malnutrition indicator score -the score for part 2-can be as high as 16 points. The total score for the full MNA will fall between 0 and 30 points: 24 and higher indicates a well-nourished patient; 17 to 23.5 indicates a risk of malnutrition; lower than 17 indicates malnutrition.">info</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
+
+<section class="section" id="MNAblock">
+
+{{#if editMNA}}
+    {{#unless userType}}
+    <form action="/master/edit-mna/{{editMNA.mnaID}}?_method=PUT" method="POST" id="editMNA">
+    {{else}}
+    <form action="/student/edit-mna/{{recordID}}/{{editMNA.mnaID}}?_method=PUT" method="POST" id="editMNA">
+    {{/unless}}
+{{else}}
+    {{#unless userType}}
+{{!-- <input type="hidden" name="_method" value="PUT"> --}}
+    <form action="/master/add-mna1" method="POST" id="addMNA">
+    {{else}}
+    <form action="/student/add-mna1/{{recordID}}" method="POST" id="addMNA">
+    {{/unless}}
+{{/if}}
+
+<div id="MNAid" class="row">       
+
+<div class="col s12 m3 input-field">
+    <input id="dateMNA" type="text" class="datepicker" name="dateMna" value="{{editMNA.date}}" required>
+    <label for="dateMNA">Date</label>
+    <span class="helper-text">DD/MM/YYYY</span>
+</div>
+
+<div class="col s12 m3 input-field">
+    <input id="timeMNA" type="text" class="timepicker" name="timeMNA" value="{{editMNA.time}}" required>
+    <label for="timeMNA">Time</label>
+    <span class="helper-text">hh:ss</span>
+</div>
+
+</div>
+        <div class="wrapper" id="MNAPart1" >      
+
+                <div style="font-weight:bold">
+                    A. <br> Has food intake declined over the past 3 months due to lost of appitite, digestive problems, chewing or swallowing difficulties?
+                </div>
+                <div >
+                    <select id="foodIntake" name="foodIntake" required>
+                        <option value="">Select</option>
+                        <option value="Severe Decrease +0">0 = severe decrease in food intake </option>
+                        <option value="Moderate Decrease +1">1 = moderate decrease in food intake </option>
+                        <option value="No Decrease +2">2 = no decrease in food intake</option>
+                    </select>
+                    <label for="foodIntake">Food Intake</label>
+                </div>
+
+                <div style="font-weight:bold">
+                    B. <br> Weight loss during the last 3 months 
+                </div>
+
+                <div>
+                    <select id="weightLoss" name="weightLoss" required>
+                        <option value="">Select</option>
+                        <option value="Severe Weight Loss +0">0 = weight loss greater than 3kg (6.6lbs) </op   tion>
+                        <option value="Don't Know +1">1 = does not know </option>
+                        <option value="Moderate Weight Loss +2">2 = weight loss between 1 and 3kg (2.2 and 6.6 lbs) </option>
+                        <option value="No Weight Loss +3">3 = no weight loss</option>
+                    </select>
+                    <label for="weightLoss">Weight Loss</label>
+                </div>
+
+                <div style="font-weight:bold">
+                    C. <br> Mobility
+                </div>
+    
+                <div>
+                    <select id="mobility" name="mobility" required>
+                        <option value="" >Select</option>
+                        <option value="Bedfast +0">0 = bed or chair bound </option>
+                        <option value="Chairfast +1">1 = able to get out of bed / chair but does not go out </option>
+                        <option value="Goes Out +2">2 = goes out</option>
+                    </select>
+                    <label for="mobility">Mobility</label>
+                </div>
+                
+                <div style="font-weight:bold">
+                    D. <br>	Has suffered psychological stress or acute disease in the past 3 months?
+                </div>
+                
+                 <div>
+                    <select id="psych" name="psych" required>
+                        <option value="+0">Select</option>
+                        <option value="Yes +0">0 = Yes</option>
+                        <option value="No +2">2 = No</option>
+                    </select>
+                    <label for="psych">Psychological Stress</label>
+                </div>
+
+                <div style="font-weight:bold">
+                    E. <br> Neuropsychological Problems
+                </div>
+            
+                 <div>
+                    <select id="neuroPsych" name="neuroPsych" required>
+                        <option value="+0" >Select</option>
+                        <option value="Severe +0">0 = severe dementia or depression</option>
+                        <option value="Mild +1">1 = mild dementia</option>
+                        <option value="No Problems +2">2 = no psychological problems</option>
+                    </select>
+                    <label for="neuroPsych">Neuropsychological Problems</label>
+                </div>
+
+                <div style="font-weight:bold">
+                    F. <br> Body Mass Index (BMI) = weight in kg/(height in m2)
+                </div>
+
+                <div>
+                    <select id="BMI" name="BMI" required>
+                        <option value="+0">Select</option>
+                        <option value="BMI less than 19 +0">0 = BMI less than 19</option>
+                        <option value="BMI less than 21 +1">1 = BMI 19 to less than 21</option>
+                        <option value="BMI less than 23 +2">2 = BMI 21 to less than 23</option>
+                        <option value="BMI more than equals to 23 +3">3 = BMI 23 or greater</option>                       
+                    </select>
+                    <label for="BMI">BMI</label>
+                </div>
+        </div>
+    </form>
+<br>
+
+<div class="row">
+
+    <div class="col s12 m8"></div>
+
+        <div class="col s12 m4">
+            {{#if editMNA}}
+            <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editMNA">Save Changes
+            {{else}}
+            <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addMNA">Save
+            {{/if}}
+            {{#unless userType}}
+                <i class="material-icons right">send</i>
+                {{else}}
+                <i class="material-icons right">send</i>
+            {{/unless}}
+        </div>
+</div>
+
+<div class="row"> 
+
+
+
+<div class=" col s12 m3">
+   <u>  <b>Interpretation of screening score</b>   </u> 
+    <br>    <br>
+
+    Malnourished: Total Score 7 or less
+    <br>    <br>
+
+    At risk of malnutrition: Total Score 8-11
+    <br>    <br>
+
+    Normal nutritional status: Total Score 12-14
+    <br>    <br>
+</div>
+
+</div>
+
+</section>
+
+<section class="section" id="MNAblock2">
+
+
+{{#if editMNA}}
+    {{#unless userType}}
+    <form action="/master/edit-mna2/{{editMNA.mnaID}}?_method=PUT" method="POST" id="editMNA2">
+    {{else}}
+    <form action="/student/edit-mna2/{{recordID}}/{{editMNA.mnaID}}?_method=PUT" method="POST" id="editMNA2">
+    {{/unless}}
+{{else}}
+    {{#unless userType}}
+{{!-- <input type="hidden" name="_method" value="PUT"> --}}
+        <form action="/master/add-mna2" method="POST" id="addMNA2">
+        {{else}}
+        <form action="/student/add-mna2/{{recordID}}" method="POST" id="addMNA2">
+    {{/unless}}
+{{/if}}
+
+<div id="MNAid" class="row" >       
+
+<div class="col s12 m3 input-field">
+    <input id="MNAdate" type="text" class="datepicker" name="dateMNA2" value="{{editMNA.date}}" required>
+    <label for="MNAdate">Date</label>
+    <span class="helper-text">DD/MM/YYYY</span>
+</div>
+
+<div class="col s12 m3 input-field">
+    <input id="MNAtime" type="text" class="timepicker" name="timeMNA2" value="{{editMNA.time}}" required>
+    <label for="MNAtime">Time</label>
+    <span class="helper-text">hh:ss</span>
+</div>
+
+</div>
+
+        <div class="wrapper" id="MNAPart2" >
+
+                <div style="font-weight:bold">
+                    G. <br> Lives independently (not in nursing home or hospital) 
+                </div>
+                <div >
+                    <select id="liveInd" name="liveInd" required>
+                        <option value="">Select</option>
+                        <option value="No +0.0">0 = No </option>
+                        <option value="Yes +1.0">1 = Yes </option>
+                    </select>
+                    <label for="liveInd">Lives independently</label>
+                </div>
+
+                <div style="font-weight:bold">
+                    H. <br> Takes more than 3 prescription drugs per day 
+                </div>
+
+                <div>
+                    <select id="drugs" name="drugs" required>
+                        <option value="">Select</option>
+                        <option value="No +0.0">0 = No </option>
+                        <option value="Yes +1.0">1 = Yes </option>
+                    </select>
+                    <label for="drugs">Takes more than 3 prescription drugs per day</label>
+                </div>
+
+                <div style="font-weight:bold">
+                    I. <br> Pressure sores or skin ulcers
+                </div>
+    
+                <div>
+                    <select id="ulcers" name="ulcers" required>
+                        <option value="" >Select</option>
+                        <option value="Yes +0.0">0 = Yes</option>
+                        <option value="No +1.0">1 = No </option>
+                    </select>
+                    <label for="ulcers">Pressure sores or skin ulcers</label>
+                </div>
+                
+                <div style="font-weight:bold">
+                    J. <br>	How many full meals does the patient eat daily? 
+                </div>
+                
+                 <div>
+                    <select id="fullmeals" name="fullmeals" required>
+                        <option value="">Select</option>
+                        <option value="One meal +0.0">0 = 1 meal</option>
+                        <option value="Two meals +1.0">1 = 2 meals</option>
+                        <option value="Three meals +2.0">2 = 3 meals</option>
+                    </select>
+                    <label for="psych"> </label>
+                </div>
+
+                <div style="font-weight:bold">
+                    K. <br> Selected consumption markers for protein intake 
+                </div>
+            
+                 <div style="font-weight:bold">
+                     <h6>Score:</h6>
+                     <p>
+                        0.0 = if 0 or 1 yes <br/>
+                        0.5 = if 2 yes<br/>
+                        1.0 = if 3 yes<br/>
+                     </p>     
+                 </div>
+
+                <div style="font-weight:bold">
+                    K(i). <br> • At least one serving of dairy products (milk, cheese, yoghurt) per day 
+                </div>
+
+                <div>
+                    <label>
+                        <input name="dairy" id="dairy" type="radio" value="Yes" {{checked editMNA.dairy 'Yes'}}/>
+                        <span style="padding-left: 25px; padding-right: 10px">Yes</span>
+                    </label>
+                    <label>
+                        <input name="dairy" id="dairy" type="radio" value="No" {{checked editMNA.dairy 'No'}}/>
+                        <span style="padding-left: 25px; padding-right: 10px">No</span>
+                    </label>
+                </div>
+
+                <div style="font-weight:bold">
+                    K(ii). <br> • Two or more servings of legumes or eggs per week 
+                </div>
+
+                <div>
+                    <label>
+                        <input id="eggs" name="eggs" type="radio" value="Yes" {{checked editMNA.eggs 'Yes'}}/>
+                        <span style="padding-left: 25px; padding-right: 10px">Yes</span>
+                    </label>
+                    <label>
+                        <input id="eggs" name="eggs" type="radio" value="No" {{checked editMNA.eggs 'No'}}/>
+                        <span style="padding-left: 25px; padding-right: 10px">No</span>
+                    </label>
+                </div>
+
+                <div style="font-weight:bold">
+                    K(iii). <br> • Meat, fish or poultry every day 
+                </div>
+
+                <div>
+                    <label>
+                        <input id="meats" name="meats" type="radio" value="Yes" {{checked editMNA.meats 'Yes'}}/>
+                        <span style="padding-left: 25px; padding-right: 10px">Yes</span>
+                    </label>
+                    <label>
+                        <input id="meats" name="meats" type="radio" value="No" {{checked editMNA.meats 'No'}}/>
+                        <span style="padding-left: 25px; padding-right: 10px">No</span>
+                    </label>
+                </div>
+
+                <div style="font-weight:bold">
+                    L. <br> Consumes two or more servings of fruit or vegetables per day? 
+                </div>
+
+                <div>
+                    <select id="vegetal" name="vegetal" required>
+                        <option value="" >Select</option>
+                        <option value="Yes +1.0">1 = Yes</option>
+                        <option value="No +0.0">0 = No </option>
+                    </select>
+                    <label for="vegetal"></label>
+                </div>
+
+                <div style="font-weight:bold">
+                    M. <br> How much fluid (water, juice, coffee, tea, milk...) is consumed per day?  
+                </div>
+
+                <div>
+                    <select id="fluids" name="fluids" required>
+                        <option value="" >Select</option>
+                        <option value="less than three cups +0.0">0.0 = less than 3 cups</option>
+                        <option value="three to five cups +0.5">0.5 = 3 to 5 cups</option>
+                        <option value="more than five cups +1.0">1.0 = more than 5 cups</option>
+                    </select>
+                    <label for="fluids"></label>
+                </div>
+
+                <div style="font-weight:bold">
+                    N. <br> Mode of feeding   
+                </div>
+
+                <div>
+                    <select id="feeding" name="feeding" required>
+                        <option value="" >Select</option>
+                        <option value="unable to eat without assistance +0.0">0 = unable to eat without assistance</option>
+                        <option value="self fed with some difficulty +1.0">1 = self-fed with some difficulty</option>
+                        <option value="self fed without any problems +2.0">2 = self-fed without any problems</option>
+                    </select>
+                    <label for="feeding"></label>
+                </div>
+
+                <div style="font-weight:bold">
+                    O. <br> Self view of nutritional status 
+                </div>
+
+                <div>
+                    <select id="nutrition" name="nutrition" required>
+                        <option value="" >Select</option>
+                        <option value="views self as being malnourished +0.0">0 = views self as being malnourished</option>
+                        <option value="is uncertain of nutritional state +1.0">1 = is uncertain of nutritional state</option>
+                        <option value="views self as having no nutritional problem +2.0">2 = views self as having no nutritional problem</option>
+                    </select>
+                    <label for="nutrition"></label>
+                </div>
+
+                <div style="font-weight:bold">
+                    P. <br> In comparison with other people of the same age, how does the patient consider his / her health status?
+                </div>
+
+                <div>
+                    <select id="healthStat" name="healthStat" required>
+                        <option value="" >Select</option>
+                        <option value="not as good +0.0">0.0 = not as good</option>
+                        <option value="does not know +0.5">0.5 = does not know</option>
+                        <option value="as good +1.0">1.0 = as good</option>
+                        <option value="better +2.0">2.0 = better</option>
+                    </select>
+                    <label for="healthStat"></label>
+                </div>
+
+                <div style="font-weight:bold">
+                    Q. <br> Mid-arm circumference (MAC) in cm 
+                </div>
+
+                <div>
+                    <select id="mac" name="mac" required>
+                        <option value="" >Select</option>
+                        <option value="MAC less than twenty-one +0.0">0.0 = MAC less than 21</option>
+                        <option value="MAC twenty-one to twenty-two +0.5">0.5 = MAC 21 to 22</option>
+                        <option value="MAC greater than twenty-two +1.0">1.0 = MAC greater than 22</option>
+                    </select>
+                    <label for="mac"></label>
+                </div>
+
+                <div style="font-weight:bold">
+                    R. <br> Calf circumference (CC) in cm  
+                </div>
+
+                <div>
+                    <select id="cc" name="cc" required>
+                        <option value="" >Select</option>
+                        <option value="CC less than thirty-one +0.0">0 = CC less than 31</option>
+                        <option value="CC thirty-one or greater +1.0">1 = CC 31 or greater</option>
+                    </select>
+                    <label for="cc"></label>
+                </div>
+        </div>
+        </form>
+
+        <br>
+
+        <div class="row">
+
+            <div class="col s12 m8"></div>
+
+                <div class="col s12 m4">
+                    {{#if editMNA}}
+                    <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editMNA2">Save Changes
+                    {{else}}
+                    <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addMNA2">Save
+                    {{/if}}
+                    {{#unless userType}}
+                    <i class="material-icons right">send</i>
+                    {{else}}
+                    <i class="material-icons right">send</i>
+                    {{/unless}}
+                </div>
+        </div>
+
+        <div class="row"> 
+
+
+
+        <div class=" col s12 m3">
+            <u>  <b>Malnutrition Indicator Score</b>   </u> 
+             <br>    <br>
+
+            Normal nutritional status: 24 to 30 points
+             <br>    <br>
+
+            At risk of malnutrition: 17 to 23.5 points
+             <br>    <br>
+
+            Malnourished: Less than 17 points
+             <br>    <br>
+        </div>
+
+        </div>
+</section>
+
+<style>
+
+.wrapper {
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    grid-gap:0.2em;
+    grid-auto-rows: minmax(10px,auto);
+}
+
+.wrapper > div{
+   padding:1em;
+   background:#f3e5f5;
+}
+
+.card {
+    padding: 16px;
+}
+
+
+
+</style>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous">
+</script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateMNA = document.querySelector('#dateMNA');
+        const timeMNA = document.querySelector('#timeMNA');
+        const MNAdate = document.querySelector('#MNAdate');
+        const MNAtime = document.querySelector('#MNAtime');
+        const weightLoss = document.querySelector('#weightLoss');
+        const psych = document.querySelector('#psych');
+        const neuroPsych = document.querySelector('#neuroPsych');
+        const mobility = document.querySelector('#mobility');
+        const BMI = document.querySelector('#BMI');
+        const foodIntake = document.querySelector('#foodIntake');
+        const liveInd = document.querySelector('#liveInd');
+        const drugs = document.querySelector('#drugs');
+        const ulcers = document.querySelector('#ulcers');
+        const fullmeals = document.querySelector('#fullmeals');
+        const vegetal = document.querySelector('#vegetal');
+        const fluids = document.querySelector('#fluids');
+        const feeding = document.querySelector('#feeding');
+        const nutrition = document.querySelector('#nutrition');
+        const healthStat = document.querySelector('#healthStat');
+        const mac = document.querySelector('#mac');
+        const cc = document.querySelector('#cc');
+        const tabs = document.querySelector('.tabs');
+
+        M.Datepicker.init(dateMNA, {
+            maxDate: new Date(),
+            format: 'dd/mm/yyyy',
+            disableWeekends:true
+        });
+
+        M.Timepicker.init(timeMNA, {
+            twelveHour: false,
+            showClearBtn: true
+        });
+
+        M.Datepicker.init(MNAdate, {
+            maxDate: new Date(),
+            format: 'dd/mm/yyyy',
+            disableWeekends:true
+        });
+
+        M.Timepicker.init(MNAtime, {
+            twelveHour: false,
+            showClearBtn: true
+        });
+
+        M.FormSelect.init(weightLoss, {
+            
+        });
+        M.FormSelect.init(psych, {
+            
+        });
+        M.FormSelect.init(neuroPsych, {
+            
+        });
+        M.FormSelect.init(mobility, {
+            
+        });
+        M.FormSelect.init(BMI, {
+            
+        });
+        M.FormSelect.init(foodIntake, {
+            
+        });
+        M.FormSelect.init(liveInd, {
+            
+        });
+        M.FormSelect.init(drugs, {
+            
+        });
+        M.FormSelect.init(ulcers, {
+            
+        });
+        M.FormSelect.init(fullmeals, {
+            
+        });
+        M.FormSelect.init(vegetal,{
+
+        });
+        M.FormSelect.init(fluids,{
+            
+        });
+        M.FormSelect.init(feeding,{
+            
+        });
+        M.FormSelect.init(nutrition,{
+            
+        });
+        M.FormSelect.init(healthStat,{
+            
+        });
+        M.FormSelect.init(mac,{
+            
+        });
+        M.FormSelect.init(cc,{
+            
+        });
+        M.Tabs.init(tabs,{
+
+        });
+    })
+
+    {{#if editMNA}}
+        foodIntake.value = "{{editMNA.foodIntakefull}}";
+        weightLoss.value = "{{editMNA.weightLossfull}}";
+        mobility.value = "{{editMNA.mobilityfull}}";
+        psych.value = "{{editMNA.psychfull}}";
+        neuroPsych.value = "{{editMNA.neuroPsychfull}}";
+        BMI.value = "{{editMNA.BMI}}";
+
+        liveInd.value = "{{editMNA.liveIndfull}}";
+        drugs.value = "{{editMNA.drugsfull}}";
+        ulcers.value = "{{editMNA.ulcersfull}}";
+        fullmeals.value = "{{editMNA.fullmealsfull}}";
+        vegetal.value = "{{editMNA.vegetalfull}}";
+        fluids.value = "{{editMNA.fluidsfull}}";
+        feeding.value = "{{editMNA.feedingfull}}";
+        nutrition.value = "{{editMNA.nutritionfull}}";
+        healthStat.value = "{{editMNA.healthStatfull}}";
+        mac.value = "{{editMNA.macfull}}";
+        cc.value = "{{editMNA.ccfull}}";
+    {{/if}}
+
+    if ("{{currentUserType}}" == "staff")
+    {
+        $(".saveButton").hide();
+    }
+    else
+    {
+        $(".saveButton").show();
+    }
+</script>
+
+{{!-- <script>
+    {{#each newBraden}}
+    console.log("{{by}}");
+    console.log("{{../azureId}} == {{by}}");
+        if ("{{../azureId}}" == "{{by}}")
+        {
+            document.getElementById('editRights{{bradenID}}').innerHTML += "<tr>";
+            document.getElementById('editRights{{bradenID}}').innerHTML += "<td><a href='/student/braden/{{../recordID}}/{{bradenID}}'> {{datetime}} </a></td> ";
+            document.getElementById('editRights{{bradenID}}').innerHTML += "</tr>";
+        }
+        else
+        {
+            document.getElementById('editRights{{bradenID}}').innerHTML += "<tr>";
+            document.getElementById('editRights{{bradenID}}').innerHTML += "<td> {{datetime}} </td> ";
+            document.getElementById('editRights{{bradenID}}').innerHTML += "</tr>";
+        }
+    {{/each}}
+</script> --}}

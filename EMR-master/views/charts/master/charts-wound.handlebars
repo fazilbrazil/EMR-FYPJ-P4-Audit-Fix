@@ -1,0 +1,830 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<style>
+    #Hlabel,
+    #woundLat,
+    #woundLng{
+        display: none;
+    }
+    .leaflet-control-attribution{
+        display: none;
+    }
+
+    #woundLat {
+        color: black;
+    }
+
+    #woundLng {
+        color: black;
+    }
+
+    .odd {
+        background-color: lightgray
+    }
+
+    .even {
+        background-color: lightcoral;
+    }
+
+    .new {
+        background-color: orange;
+    }
+</style>
+<br />
+
+<div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">Wound Chart Records</div>
+<a class="btn" style="background-color:#6a1b9a" target="_blank"
+    href="https://www.amtwoundcare.com/uploads/2/0/3/7/20373073/amt-wound-documentation-reference_-_updated_per_6.21.18_meeting.pdf">Read
+    More</a>
+     </br>
+      <!-- Wound Table Starts Here -->
+<div style="overflow-x: auto; max-height: 20em;">
+    <table id="woundRecords" class="hover order-column">
+        <thead>
+            <tr>
+                <th>Date / Time</th>
+                <th>Wound Label</th>
+                <th>Drainage/Exudate</th>
+                <th>Wound Odour</th>
+                <th>Wound Edges</th>
+                <th>Peri-wound area</th>
+                <th>Patient Response</th>
+                <th>Wound Status</th>
+                {{#unless userType}}
+                <th>Delete</th>
+                {{/unless}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#if newWound}}
+                {{#each newWound}}
+            <tr style="height: 60px">
+                {{#unless ../userType}}
+                {{!-- <td><a href="/master/wound/{{woundID}}">{{date}}</a></td> --}}
+                <td>{{date}}</td>
+                {{else}}
+                <td>
+                    {{#ifCond ../currentUserType 'student'}}
+                    <!--If currentUserType == "staff", they can't click on a specific records to edit-->
+                    {{!-- <a href="/student/wound/{{../recordID}}/{{woundID}}">{{date}}</a> --}}
+                        {{date}}
+                    {{else}}
+                    {{date}}
+                    {{/ifCond}}
+                </td>
+                {{/unless}}
+                <td>{{woundLabel}}</td>
+                <td>{{wounddrain}}</td>
+                <td>{{woundodor}}</td>
+                <td>{{woundedges}}</td>
+                <td>{{periwound}}</td>
+                <td>{{patientresponse}}</td>
+                <td>{{woundstatus}}</td>
+                {{!-- <td>{{WoundStatus}}</td> --}}
+
+                {{#unless ../userType}}
+                    <td style="width: 55px">
+                        <a id="dropdown-button" class='dropdown-trigger btn purple darken-3 waves-effect waves-light'
+					   href='#'
+					   data-target='menu-options'>
+						<i class="material-icons">more_vert</i>
+					</a>
+                    
+                        {{!-- <!-- the tr we're trying to get -->
+                        <form action="/master/del-wound/{{woundID}}?_method=DELETE" method="post" id="delete-form">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn red darken-3">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </form>
+                        <form action="/master/wound/{{woundID}}">
+                            <button type="submit" class="btn green darken-3">
+                                <i class="material-icons">mode_edit</i>
+                            </button>
+                        </form> --}}
+                    </td>
+                {{else}}
+                    <td>
+                        {{#ifCond ../currentUserType 'student'}}
+                            <td style="width: 55px">
+                            <!-- the tr we're trying to get -->
+                            <form action="/student/wound/{{../recordID}}/{{woundID}}">
+                                <button type="submit" class="btn green darken-3">
+                                    <i class="material-icons">mode_edit</i>
+                                </button>
+                            </form>
+                            </td>
+                        {{/ifCond}}
+                    </td>
+                {{/unless}}
+            </tr>
+            <ul id="menu-options" class='dropdown-content'>
+                        <li>
+                            <form action="/master/wound/{{woundID}}">
+                            <button type="submit" class="btn green darken-3">
+                                <i class="material-icons">mode_edit</i>
+                            </button>
+                        </form>
+                        </li>
+                        <li><!-- the tr we're trying to get -->
+                        <form action="/master/del-wound/{{woundID}}?_method=DELETE" method="post" id="delete-form">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn red darken-3">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </form>
+                        </li>
+                    </ul>
+            {{/each}}
+            {{else}}
+            <p id="noRecord">You have not created any Wound records yet</p>
+            {{/if}}
+                             
+        </tbody>
+    </table>
+</div>
+
+<!-- Wound Table Starts Here -->
+
+
+</br>
+
+<div id="main">
+    <div id="map" style="height: 500px;">
+        
+       
+        <script>
+            var labelSave = false;
+            var labelname;
+            var woundsave = false;
+            var woundDar = false;
+            var formLabel;
+            var slabel;
+            var cId;
+            var saved = [];
+            var counter = 0;
+            var theMarker = {};
+            var lat;
+            var lng;
+            var option;
+            var coord;
+            $(document).ready(function () {
+                               
+            var imageUrl;
+                // Get the gender and display  
+                {{#if newG}}
+                    {{#each newG}}
+                        {{#ifCond gender 'M'}}
+                            imageUrl = '../../../assets/img/man.png';
+                            {{else}}
+                            imageUrl = '../../../assets/img/woman.png';
+                        {{/ifCond}}
+                    {{/each}}
+                {{/if}}
+           
+                var imageWidth = 654;
+                var imageHeight = 435;
+                var map = setupMap();
+
+                return;
+
+                function setupMap() {       
+                
+                    var map = L.map('map', {
+                    minZoom: 5,
+                    maxZoom: 10,
+                    center: [0, 0],
+                    zoom: 5,
+                    crs: L.CRS.Simple
+                    });          
+            
+                    var Iconplus = L.icon({
+                        iconUrl: '../../../assets/img/icons8-doodle-50.png',
+
+                        iconSize: [25, 25], // size of the icon
+                        //shadowSize:   [50, 64], // size of the shadow
+                        //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                        //shadowAnchor: [4, 62],  // the same for the shadow
+                        //popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                    });
+
+                    var Iconselected = L.icon({
+                        iconUrl: '../../../assets/img/nurse.png',
+
+                        iconSize: [25, 25], // size of the icon
+                        //shadowSize:   [50, 64], // size of the shadow
+                        //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                        //shadowAnchor: [4, 62],  // the same for the shadow
+                        //popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                    });           
+
+                    var southWest = map.unproject([0, imageHeight]);
+                    var northEast = map.unproject([imageWidth, 0]);
+                    var bounds = new L.LatLngBounds(southWest, northEast);
+                    L.imageOverlay(imageUrl, bounds).addTo(map);
+
+        //------------------------------------------------------------- Start of adding and retrieving of the marker -------------------------------------------------------------//
+                    if (document.getElementById("woundLabel").value != null) {
+                    {{#if newWound}}
+                        {{#each newWound}}
+                        // L.marker adds marker into the map by retrieving the values from database
+                        option = { myCustomId: counter, icon: Iconplus };
+                        theMarker = L.marker([{{ woundP1 }}, {{ woundP2 }}], option).addTo(map).bindPopup("{{woundLabel}}").on('click', function (e) {
+                            coord = this.getLatLng().toString().split(',');
+                            lat = coord[0].split('(');
+                            lng = coord[1].split(')');
+                            console.log(this);
+                            console.log(this._leaflet_id);
+                            console.log(lat[1]);
+                            console.log(lng[0]);
+                        });
+                        // contextmenu = right click on the marker
+                        theMarker.on('contextmenu', function (e) {
+                            if (confirm("Are you sure you want to delete this wound label " + e.target._popup.getContent()) && counter >= e.target.options.myCustomId) {
+                                e.target.remove();
+                                console.log(e.target._popup.getContent())
+                                console.log('Removed');
+                                woundsave = false;
+                            
+                                $(".disin").attr("disabled", true);
+                                $(".materialize-textarea").attr("disabled", true);
+                                if (counter <= e.target.options.myCustomId) {
+                                    e.target.remove();
+                                    console.log('Removed');
+                                    woundsave = false;
+                                    counter = --counter;
+                                    console.log(counter);
+                                    
+                                    $(".disin").attr("disabled", true);
+                                    $(".materialize-textarea").attr("disabled", true);
+                                    $("#Hlabel").hide();
+                                }
+                            }
+                            else {
+                                alert("Never Delete")
+                            }
+                        });
+                        // dragend = Drag the marker around the diagram
+                        theMarker.on('dragend', function (e) {
+                            cId = e.target.options.myCustomId;
+                            theMarker = e.target;
+                            console.log(e.target._popup.getContent() + " = label = " + formLabel);
+                            if (woundsave == true && e.target._popup.getContent() != formLabel) {
+                                alert(formLabel + " have not been saved");
+                            }
+                            else {
+                                console.log(e.target.getLatLng() + "Drag");
+                                coord = e.target.getLatLng().toString().split(',');
+                                lat = coord[0].split('(');
+                                lng = coord[1].split(')');
+                                console.log(lat[1]);
+                                console.log(lng[0]);
+                                $("#woundLat").val(lat[1]);
+                                $("#woundLng").val(lng[0]);
+                                formLabel = e.target._popup.getContent();
+                                //document.getElementById("woundLabel").value = formLabel;
+                                woundsave = true;
+                                woundDar = true;
+                                for (var i = 0; i < saved.length; i++) {
+                                    console.log(e.target.options.myCustomId);
+                                    if (saved[i] === cId) {
+                                        saved.splice(i, 1);
+                                    }
+                                }
+                                console.log(saved + " After Drag");
+                            }
+                        });
+                    {{/each}}
+                    {{/if}}
+         //------------------------------------------------------------- End of adding and retrieving of the marker -------------------------------------------------------------//
+                    
+                    /// ---------------- Edit Wound marker  ---------------------------//
+                    
+                        {{#if editWound}}
+                             map.setMaxBounds(bounds).on('click', function (e) {
+                                  map.off();
+                                  remove();
+                             });
+
+                            option = { draggable: true, myCustomId: counter, icon: Iconselected };
+                            theMarker = L.marker([{{ editWound.woundP1 }}, {{ editWound.woundP2 }}], option).addTo(map).bindPopup("{{editWound.woundLabel}}").on('dragend', function (e) {
+                            cId = e.target.options.myCustomId;
+                            theMarker = e.target;
+                            
+                            console.log(e.target._popup.getContent() + " = label = " + formLabel);
+                            if (woundsave == true && e.target._popup.getContent() != formLabel) {
+                                alert(formLabel + " have not been saved");
+                            }
+                            else {
+                                console.log(e.target.getLatLng() + "Drag");
+                                coord = e.target.getLatLng().toString().split(',');
+                                lat = coord[0].split('(');
+                                lng = coord[1].split(')');
+                                console.log(lat[1]);
+                                console.log(lng[0]);
+                                $("#woundLat").val(lat[1]);
+                                $("#woundLng").val(lng[0]);
+                                formLabel = e.target._popup.getContent();
+                                woundsave = true;
+                                woundDar = true;
+                                for (var i = 0; i < saved.length; i++) {
+                                    console.log(e.target.options.myCustomId);
+                                    if (saved[i] === cId) {
+                                        saved.splice(i, 1);
+                                    }
+                                }
+                                console.log(saved + " After Drag");
+                            }
+                        });
+                        {{/if}}
+
+                        /// ---------------- Edit Wound marker ---------------------------//
+       
+                        //add new marker into the map
+                        map.setMaxBounds(bounds).on('click', function (e) {
+                            var onMarkerClick = function (e) {
+                                if (woundsave == false && woundDar == false) {
+                                    theMarker = this;
+                                    formLabel = this._popup.getContent();
+                                    document.getElementById("woundLabel").value = formLabel;
+                                    coord = this.getLatLng().toString().split(',');
+                                    lat = coord[0].split('(');
+                                    lng = coord[1].split(')');
+                                    console.log(lat[1]);
+                                    console.log(lng[0]);
+                                    $("#woundLat").val(lat[1]);
+                                    $("#woundLng").val(lng[0]);
+                                    cId = this.options.myCustomId;
+                                }
+                                else {
+                                    alert("Please Save created marker before selecting another");
+                                }
+                            }
+                            counter = ++counter;
+                            if (woundsave == true) {
+                                if (woundDar == false) {
+                                    counter = counter - 1;
+                                    alert("You have not saved the marker which was just created");
+                                }
+                                else {
+                                    counter = counter - 1;
+                                    console.log(formLabel);
+                                    if(formLabel == undefined)
+                                    {
+                                        //alert("Dragged new marker has not been saved");
+                                    }
+                                    else{
+                                        //alert("Dragged marker " + formLabel + " has not been saved");
+                                    }
+                                }
+                            }
+                            else {
+                                // L.marker adds new marker when clicked on map
+                                woundsave = true;
+                                $("#Hlabel").hide();
+                                coord = e.latlng.toString().split(',');
+                                lat = coord[0].split('(');
+                                lng = coord[1].split(')');
+
+                                $(".disin").attr("disabled", false);
+                                $(".materialize-textarea").attr("disabled", false);
+
+                                console.log(coord);
+                                console.log(e.latlng.toString());
+                                option = { draggable: true, myCustomId: counter, icon: Iconplus };
+                                theMarker = L.marker(e.latlng, option).addTo(map).bindPopup(labelname).on('click', onMarkerClick);
+                                labelname = "";
+
+                                console.log(theMarker);
+                                console.log(theMarker.options.myCustomId);
+                                $("#woundLat").val(lat[1]);
+                                $("#woundLng").val(lng[0]);
+                                $("#markerId").val(theMarker._leaflet_id);
+                                formLabel = theMarker._popup.getContent();
+                                cId = theMarker.options.myCustomId;
+                                console.log(theMarker.getLatLng());
+                                // contextmenu = right click on the marker
+                                theMarker.on('contextmenu', function (e) {
+                                    if (confirm("Are you sure you want to delete this wound label ") && counter >= e.target.options.myCustomId) {
+                                        e.target.remove();
+                                        console.log(e.target._popup.getContent())
+                                        console.log('Removed');
+                                        woundsave = false;
+
+                                        $(".disin").attr("disabled", true);
+                                        $(".materialize-textarea").attr("disabled", true);
+                                        if (counter <= e.target.options.myCustomId) {
+                                            e.target.remove();
+                                            console.log('Removed');
+                                            woundsave = false;
+                                            counter = --counter;
+                                            console.log(counter);
+
+                                            $(".disin").attr("disabled", true);
+                                            $(".materialize-textarea").attr("disabled", true);
+                                            $("#Hlabel").hide();
+                                        }
+                                    }
+                                    else {
+                                        alert("Never Delete")
+                                    }
+                                });
+                                // dragend = Drag the marker around the diagram
+                                theMarker.on('dragend', function (e) {
+                                    cId = e.target.options.myCustomId;
+                                    theMarker = e.target;
+                                    console.log(e.target._popup.getContent() + " = label = " + formLabel);
+                                    if (woundsave == true && e.target._popup.getContent() != formLabel) {
+                                        alert(formLabel + " have not been saved");
+                                    }
+                                    else {
+                                        console.log(e.target.getLatLng() + "Drag");
+                                        coord = e.target.getLatLng().toString().split(',');
+                                        lat = coord[0].split('(');
+                                        lng = coord[1].split(')');
+                                        console.log(lat[1]);
+                                        console.log(lng[0]);
+                                        $("#woundLat").val(lat[1]);
+                                        $("#woundLng").val(lng[0]);
+                                        formLabel = e.target._popup.getContent();
+                                        //document.getElementById("woundLabel").value = formLabel;
+                                        woundsave = true;
+                                        woundDar = true;
+
+                                        for (var i = 0; i < saved.length; i++) {
+                                            console.log(e.target.options.myCustomId);
+                                            if (saved[i] === cId) {
+                                                saved.splice(i, 1);
+                                            }
+                                        }
+                                        console.log(saved + " After Drag");
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+            return map;           
+            }        
+        });
+        //------------------------------------------------------------- Save Button Start-------------------------------------------------------------//
+            function getcube() {
+                labelname = document.getElementById("woundLabel").value;
+                var cM;
+                if (labelname === "" || /^\s*$/.test(labelname) || labelname.length === 0) {
+                    alert("Please key in a Wound Label");
+                }
+                else {
+                    try {
+                        if (theMarker != undefined) {
+                            //console.log(cM);
+                            saved.push(cId);
+                            saved.sort();
+                            console.log(theMarker._popup.getContent() + 1);
+                            console.log(saved + "After Save");
+                            theMarker._popup.setContent(labelname);
+                            //set name to the popup
+                            console.log(theMarker._popup.getContent() + 2);
+                            document.getElementById("Hlabel").style.display = "none";
+                            theMarker = undefined;
+                            woundsave = false;
+                            woundDar = false;
+                        }
+                        else {
+                            //  alert("Please insert marker before adding label ssss");
+                        }
+                    } catch (err) {
+                        alert("Please insert marker before adding labels");
+                    }
+                }
+            }
+        //------------------------------------------------------------- Save Button End-------------------------------------------------------------//
+        </script>
+    </div>
+</div>
+
+{{#if editWound}}
+{{#unless userType}}
+<form action="/master/edit-wound/{{editWound.woundID}}?_method=PUT" method="POST" id="editWound">
+    {{else}}
+    <form action="/student/edit-wound/{{recordID}}/{{editWound.woundID}}?_method=PUT" method="POST" id="editWound">
+        {{/unless}}
+        {{else}}
+        {{#unless userType}}
+        <form action="/master/add-wound" method="POST" id="addWound">
+            {{else}}
+            <form action="/student/add-wound/{{recordID}}" method="POST" id="addWound">
+                {{/unless}}
+                {{/if}}
+                <div class="card purple lighten-5">
+                    <div class="card-content">
+                        <div id="ioInfo">
+                            <span class="purple-text darken-2"></span>
+                            <div class="card-panel purple darken-3 white text"
+                                style="padding: 5px; font-size:20px; color: white;" id="Hlabel"></div>
+                            <div class="row">
+                                <div class="row">
+                                    <div style="font-weight:bold">Wound Lable</div>
+                                    <div class="col s12 m4 input-field">
+                                        <input id="woundLabel" type="text" name="woundLabel" class="disin"
+                                            value="{{editWound.woundLabel}}">
+                                        <label style="color: black" for="woundLab" >Wound Lable</label>
+                                        <span class="helper-text"></span>
+                                    </div>
+                                    <div class="col s12 m4 input-field">
+                                        <input id="woundLat" type="text" name="woundLat" value="{{editWound.woundP1}}">
+                                        <span class="helper-text"></span>
+                                    </div>
+                                    <div class="col s12 m4 input-field">
+                                        <input id="woundLng" type="text" name="woundLng" value="{{editWound.woundP2}}">
+                                        <span class="helper-text"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12 m4 input-field">
+                                    <select id="woundCat" name="woundCat">
+                                        <option value="" disabled selected>Wound Category</option>
+                                        <option value="Surgical">Surgical</option>
+                                        <option value="Body modifications">Body modifications</option>
+                                        <option value="Burns">Burns</option>
+                                        <option value="Lesions">Lesions</option>
+                                        <option value="Pressure ulcers">Pressure ulcers</option>
+                                    </select>
+                                    <label for="woundCat">Wound Category</label>
+                                </div>
+                                <div class="col s12 m4 input-field">
+                                    <input id="woundtype" type="text" name="woundtype" class="disin"
+                                        value="{{editWound.woundtype}}">
+                                    <label style="color: black" for="woundtype">Wound Type <i class="tiny material-icons tooltip "
+                                            data-toggle="tooltip" data-placement="right"
+                                            title="e.g., laceration, contusion, puncture, penetration, abrasion, incision, amputation, avulsion.">info</i></label>
+                                    <span class="helper-text"></span>
+                                </div>
+                                <div class="col s12 m4 input-field">
+                                    <input id="woundLocation" type="text" name="woundLocation" class="disin"
+                                        value="{{editWound.woundLocation}}">
+                                    <label style="color: black" for="woundLocation">Wound Location <i class="tiny material-icons tooltip "
+                                            data-toggle="tooltip" data-placement="right"
+                                            title="e.g., right anterior forearm.">info</i></label>
+                                    <span class="helper-text"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="font-weight:bold">Wound Size</div>
+                                <div class="col s12 m4 input-field">
+                                    <input id="woundL" type="number" name="woundL" class="disin" step="0.01"    
+                                        value="{{editWound.woundL}}">
+                                    <label style="color: black" for="woundsizeL">Wound Length (cm)</label>
+                                    <span class="helper-text"></span>
+                                </div>
+                                <div class="col s12 m4 input-field">
+                                    <input id="woundW" type="number" name="woundW" class="disin" step="0.01" 
+                                        value="{{editWound.woundW}}">
+                                    <label style="color: black" for="woundsizeW">Wound Width (cm)</label>
+                                    <span class="helper-text"></span>
+                                </div>
+                                <div class="col s12 m4 input-field">
+                                    <input id="woundD" type="number" name="woundD" class="disin" step="0.01" 
+                                        value="{{editWound.woundD}}">
+                                    <label style="color: black" for="woundsizeD">Wound Depth (cm)</label>
+                                    <span class="helper-text"></span>
+                                </div>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Wound drainage/exudate
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="wounddrain" name="wounddrain" class="materialize-textarea"
+                                                value="">{{ editWound.wounddrain }}</textarea>
+                                            <label for="wounddrain">COCA, e.g., moderate amount of sanguineous
+                                                exudate/drainage.</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Wound odor
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="woundodor" name="woundodor" class="materialize-textarea"
+                                                value="">{{ editWound.woundodor }}</textarea>
+                                            <label for="woundodor">e.g., foul odor present after cleansing the
+                                                wound.</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Wound edges
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="woundedges" name="woundedges" class="materialize-textarea"
+                                                value="">{{ editWound.woundedges }}</textarea>
+                                            <label for="woundedges">e.g., undefined macerated wound edges.</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Periwound area
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="periwound" name="periwound" class="materialize-textarea"
+                                                value="">{{ editWound.periwound }}</textarea>
+                                            <label for="periwound">e.g., warm and oedematous.</label>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Dressing and wound care
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="dresswound" name="dresswound" class="materialize-textarea"
+                                                value="">{{ editWound.dresswound }}</textarea>
+                                            <label for="dresswound">e.g., foam, transparent, hydrogel/hydrocolloid,
+                                                calcium
+                                                alginate, vacuum dressing.</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Solutions used
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="solutionsU" name="solutionsU" class="materialize-textarea"
+                                                value="">{{ editWound.solutionsU }}</textarea>
+                                            <label for="solutionsU">e.g., normal saline, chlorhexidine (%), povidone
+                                                iodine,
+                                                etc.</label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Interventions
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="interventions" name="interventions"
+                                                class="materialize-textarea"
+                                                value="">{{ editWound.interventions }}</textarea>
+                                            <label for="interventions">e.g., dietary supplements, lab test, turning and
+                                                repositioning schedule, support surface, paddling, elevation, heal
+                                                protection,
+                                                incontinence management, skin care, barrier ointment, etc.</label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Patient’s response
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="patientresponse" name="patientresponse"
+                                                class="materialize-textarea"
+                                                value="">{{ editWound.patientresponse }}</textarea>
+                                            <label for="patientresponse">e.g., patient complains of pain, itchiness,
+                                                etc.</label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            Remarks
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <textarea id="woundremarks" name="woundremarks" class="materialize-textarea"
+                                                value="">{{ editWound.woundremarks }}</textarea>
+                                            <label for="woundremarks">e.g., wound inspection every 5 days.</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="row">
+                                <br>
+                                <div style="font-weight:bold">Wound Status</div>
+                                <div class="col s12 m4 input-field">
+                                    <select id="statuswound" name="statuswound">
+                                        <option value="" disabled selected>Wound Status</option>
+                                        <option value="New wound">New wound</option>
+                                        <option value="Active wound">Active wound</option>
+                                        <option value="Healed wound">Healed wound</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <br>
+
+            <div class="row">
+                <div class="col s12 m8"></div>
+                <div class="col s12 m4">
+                    {{#if editWound}}
+                    <button class="btn waves-effect waves-light saveButton" onclick="getcube()" style="width: 150px; float:right;"
+                        type="submit" form="editWound">Save Changes
+                        {{else}}
+                        <button class="btn waves-effect waves-light saveButton" onclick="getcube()"
+                            style="width: 150px; float:right;" type="submit" form="addWound">Save
+                            {{/if}}
+                            {{#unless userType}}
+                            <i class="material-icons right">send</i>
+                            {{else}}
+                            <i class="material-icons right">send</i>
+                            {{/unless}}
+                </div>
+            </div>
+            <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+            <script>
+                //Table color code Start
+                var tab = document.getElementById("woundRecords");
+                var rows = tab.getElementsByTagName("tr");
+                for (i = 0; i < rows.length; i++) {
+                    if (rows[i].cells.item(7).innerHTML == "Healed wound") {
+                        //alert("Hello0");
+                        rows[i].className = "odd";
+                    }
+                    else if (rows[i].cells.item(7).innerHTML == "Active wound") {
+                        //alert("Hello1");
+                        rows[i].className = "even";
+                    }
+                    else if (rows[i].cells.item(7).innerHTML == "New wound") {
+                        //alert("Hello1");
+                        rows[i].className = "new";
+                    }
+                    //alert(rows[i].cells.item(1).innerHTML);
+                }
+                //Table color code End 
+
+                document.addEventListener('DOMContentLoaded', () => {
+
+                    const woundCat = document.querySelector("#woundCat");
+                    const statuswound = document.querySelector("#statuswound");
+
+                    M.FormSelect.init(woundCat, {
+
+                    });
+                    M.FormSelect.init(statuswound, {
+
+                    });
+                })
+                if ("{{currentUserType}}" == "staff") {
+                    $(".saveButton").hide();
+                }
+                else {
+                    $(".saveButton").show();
+                }
+
+        {{#if editWound}}
+        document.getElementById('woundCat').value = "{{editWound.woundCat}}";
+        document.getElementById('statuswound').value= "{{editWound.woundstatus}}";
+        {{/if}}
+
+            </script>

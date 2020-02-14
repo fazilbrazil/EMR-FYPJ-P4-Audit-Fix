@@ -1,0 +1,272 @@
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /*border-bottom: 1px dotted black;*/
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: grey;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.textTable{
+    max-width:200px;
+    word-wrap:break-word;
+}
+</style>
+<br/>
+<div id="io">
+    <div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">My History Taking</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="ioRecords" class="hover order-column">
+            <thead>
+                <tr>
+                    <th>Created By</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {{#if newOtherHistory}} {{!--own record--}}
+                    <tr style="height: 60px;">
+                        <td><a href="/student/HistoryTaking/{{recordID}}/{{newOtherHistory.historyId}}/{{newOtherHistory.by}}">{{newOtherHistory.by}}</a></td>
+                    </tr>               
+                {{else}}
+                <p id="noRecord">You have not created any History Taking yet</p>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">Other History Taking</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="ioRecords" class="hover order-column">
+            <thead>
+                <tr>
+                    <th>Created By</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                
+                {{#if newHistory}} {{!--others--}}
+                    {{#each newHistory}}
+                    <tr style="height: 60px;">
+                        <td><a href="/student/HistoryTaking/{{../recordID}}/{{historyId}}/{{by}}">{{by}}</a></td>
+                    </tr>
+                    {{/each}} 
+                {{else}}
+                <p id="noRecord">There is no History Taking records made by others yet</p>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+    </div>
+
+    {{#if editHistory}}
+    {{!-- {{#unless userType}} --}}
+    <form action="/student/edit-history/{{recordID}}/{{editHistory.historyId}}/{{editHistory.by}}?_method=PUT" method="POST" id="editHistory">
+    {{!-- {{else}}     --}}
+    {{!-- <form action="/master/edit-history/{{recordID}}/{{editHistory.historyId}}?_method=PUT" method="POST" id="editHistory"> --}}
+    {{!-- {{/unless}} --}}
+    <input type="hidden" name="_method" value="PUT">
+    {{else}}
+    <form action="/student/add-history/{{recordID}}" method="POST" id="addHistory">
+    {{/if}}
+        <div class="card purple lighten-5">
+            <div class="card-content">
+                <div id="ioInfo">
+                    <span class="purple-text darken-2">History Taking</span>
+                
+                    <table>
+                         <tr>
+                            <td>
+                                <div>
+                                   Chief Complains
+                                </div>
+                            </td>
+                            <td>
+                                <div class=>
+                                    <textarea id="chiefComp" name="chiefComp" class="materialize-textarea" value="" required>{{ editHistory.chiefComp }}</textarea>
+                                    <label for="chiefComp">The primary symptom that a patient states as the reason for seeking medical care</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>
+                                   History of Present Illness
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <textarea id="historyPresent"name="historyPresent" class="materialize-textarea" value="" required>{{editHistory.historyPresent}}</textarea>
+                                    <label for="historyPresent">A detailed interview (e.g., using OLDCART) prompted by the chief complaint or presenting symptom</label>
+                                </div>
+                            </td>
+                        </tr>
+                
+                          <tr>
+                            <td>
+                                <div>
+                                   Allergy Status
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <textarea id="allergy" name="allergy" class="materialize-textarea" value="" required>{{editHistory.allergy}}</textarea>
+                                    <label for="allergy">Identify any allergies (drugs, food, substance) the patient may have, details of what happens (e.g., rashes, anaphylaxis),<br> and treatment for the allergy episodes</label>
+                                </div>
+                            </td>
+                        </tr>
+                          <tr>
+                            <td>
+                                <div>
+                                    Medical History
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <textarea id="medicalH" name="medicalH" class="materialize-textarea" value="" required>{{editHistory.medicalH}}</textarea>
+                                    <label for="medicalH">Significant past diseases/illnesses, including present and past, prescribed and over-the-counter medicines</label>
+                                </div>
+                            </td>
+                            
+                        </tr>
+                          <tr>
+                            <td>
+                                <div>
+                                    Surgical History
+                                </div>
+                            </td>
+                            <td>
+                                 <div>
+                                    <textarea id="surgicalH" name="surgicalH" class="materialize-textarea" value="" required>{{editHistory.surgicalH}}</textarea>
+                                    <label for="surgicalH">Significant past surgery, including treatment, follow-up and complications; trauma/injuries</label>
+                                </div>
+                            </td>
+                            
+                        </tr>
+                          <tr>
+                            <td>
+                                <div>
+                                    Family History
+                                </div>
+                            </td>
+                            <td>
+                                 <div>
+                                    <textarea id="familyH" name="familyH" class="materialize-textarea" value="" required>{{editHistory.familyH}}</textarea>
+                                    <label for="familyH">About diseases/disorders from which the direct blood relatives of the patient have suffered</label>
+                                </div>
+                            </td>
+                            
+                        </tr>
+                          <tr>
+                            <td>
+                                <div>
+                                    Social History
+                                </div>
+                            </td>
+                            <td>
+                                 <div>
+                                    <textarea id="socialH" name ="socialH" class="materialize-textarea" value="" required>{{editHistory.socialH}}</textarea>
+                                    <label for="socialH">The patient's education, occupation, usual daily activities, 
+                                        functional status, relationships with friends and family,<br> social supports and stresses, 
+                                        financial status/insurance coverage, lifestyle such as use of cigarettes, alcohol, 
+                                        diet or exercises that have known health consequences</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>
+                                    Travel History
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <textarea id="travelH" name="travelH" class="materialize-textarea" value="" required>{{editHistory.travelH}}</textarea>
+                                    <label for="travelH">Travel departure & start dates; specific areas of travel (eg., every Country, every City/Rural region visited);
+                                        <br> nature of terrain - rural/urban/forest/mountains; duration of visit at each destination</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <div></div>
+
+                                <div>
+                                {{#if editHistory}}
+                                    <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editHistory">Save Changes
+                                {{else}}
+                                
+                                    <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addHistory">Save
+                                
+                                {{/if}}
+                                {{#unless userType}}
+                                    <i class="material-icons right">send</i>
+                                    </button>
+                                {{/unless}}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+    </form>
+
+
+</div>
+
+<script
+		src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous">
+</script>
+
+<script>
+
+    $(document).ready(() => {
+        $('.tabs').tabs();
+        console.log("{{by}}");
+        console.log("{{currentName}}");
+        if("{{by}}" == "{{currentName}}"){
+           if({{checkifEmpty}} == true)
+               $(".saveButton").show();
+        }
+        else {
+            if({{checkifEmpty}} == false){
+                console.log("hi");
+                $(".saveButton").hide();
+            }
+
+        }
+    })
+    
+  
+    if ("{{currentUserType}}" == "staff")
+    {
+        $(".saveButton").hide();
+    }
+    else
+    {
+        $(".saveButton").show();
+    }
+
+
+ </script>

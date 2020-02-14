@@ -1,0 +1,1412 @@
+<style>
+    td, th {
+        text-align: center
+    }
+    .tabs .indicator {
+        background-color: #6A1B9A;
+    }
+    .tabs .tab a:focus, .tabs .tab a:focus.active {
+        background: transparent;
+    }
+
+    #ioflowsheetTable th {
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom: none;
+    }
+    #ioflowsheetTable tr {
+        border-bottom: none;
+    }
+    #ioflowsheetTable tr td {
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+    }
+</style>
+
+
+<br>
+<div class="row">
+    <div class="col s12">
+        <div class="tabs">
+            <li class="tab col s2 offset-s1" id="ioflowTab"><a class="purple-text text-darken-3" id="tab0" href="#ioflowsheet">IO Flowsheet</a></li>
+            <li class="tab col s2" id="iotab"><a class="purple-text text-darken-3" id="tab1" href="#io">Intake P.O</a></li>
+            <li class="tab col s2" id="enttab"><a class="purple-text text-darken-3" id="tab2" href="#enteral">Intake Enteral</a></li>
+            <li class="tab col s2" id="ivtab"><a class="purple-text text-darken-3" id="tab3" href="#iv">Intake I.V</a></li>
+            <li class="tab col s2" id="outtab"><a class="purple-text text-darken-3" id="tab4" href="#output">Output</a></li>
+            {{!-- <li class="tab col s2" id="tabletab"><a class="purple-text text-darken-3" id="tab5" href="#table">Net IO</a></li> --}}
+        </div>
+    </div>
+</div>
+
+
+ {{!-- IO Flowsheet code start --}}
+ <div id="ioflowsheet">
+    <div class="card-panel purple darken-3 white-text" style="padding: 5px; font-size: 20px; text-align: center"> IO Flowsheet</div>
+    
+    <div style="overflow-x: auto; max-height: 48em;">
+        <table id="ioflowsheetTable">
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Datetime</th>
+                {{#each iodateVal}}
+                <th style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">{{formatDatetime this}}</th>
+                {{/each}}
+            </tr>
+
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Intake PO</th>
+                {{#each ioFlow}}
+                <td class="intakePO"></td>
+                {{/each}}
+            </tr>
+
+            <tr>
+                <th width="10%">Type of Food</th>
+                {{#each ioFlow}}
+                <td>{{foodtype}}</td>
+                {{/each}}
+            </tr>
+
+            <tr>
+                <th width="10%">Portion Taken</th>
+                {{#each ioFlow}}
+                <td>{{foodportion}}</td>
+                {{/each}}
+            </tr>
+
+            <tr>
+                <th width="10%">Type of Fluid Consumed</th>
+                {{#each ioFlow}}
+                <td>{{fluidtype}}</td>
+                {{/each}}
+            </tr>
+
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Fluid Consumed (mL) </th>
+                {{#each ioFlow}}
+                <td style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)" class="fluidConsumed">{{fluidportion}}</td>
+                {{/each}}
+            </tr>
+
+        {{!-- enteral --}}
+
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Intake Enteral</th>
+                {{#each enteralFlow}}
+                <td class="intakeEnteral"></td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Enteral Feeding</th>
+                {{#each enteralFlow}}
+                <td>{{enteralfeed}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Type of Formula</th>
+                {{#each enteralFlow}}
+                <td>{{formula}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Amount of Feeding (mL)</th>
+                {{#each enteralFlow}}
+                <td class="amountOfFeeding">{{feedamt}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Fluid Consumed (mL)</th>
+                {{#each enteralFlow}}
+                <td style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)" class="flush">{{flush}}</td>
+                {{/each}}
+            </tr>
+
+            {{!-- iv --}}
+
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Intake I.V (mL)</th>
+                {{#each ivFlow}}
+                <td class="intakeIV"></td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Type of I.V Infusion (continuous)</th>
+                {{#each ivFlow}}
+                <td>{{coninf}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Amount Infused (continuous)</th>
+                {{#each ivFlow}}
+                <td class="amountInfusedContinuous">{{conamt}}</td>
+                {{/each}}
+            </tr>
+            
+            <tr>
+                <th width="10%">Type of I.V. Infusion (intermittent)</th>
+                {{#each ivFlow}}
+                <td>{{intinf}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Amount Infused (intermittent)</th>
+                {{#each ivFlow}}
+                <td class="amountInfusedIntermittent">{{amtinf}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">I.V Flush (mL)</th>
+                {{#each ivFlow}}
+                <td style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)" class="ivFlush">{{ivflush}}</td>
+                {{/each}}
+            </tr> 
+
+            {{!-- output --}}
+        
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Output (mL)</th>
+                {{#each outputFlow}}
+                <td class="outputFlow"></td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Urine (mL)</th>
+                {{#each outputFlow}}
+                <td class="urine">{{urineamt}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Urine Assessment</th>
+                {{#each outputFlow}}
+                <td>{{urineass}}</td>
+                {{/each}}
+            </tr>
+            
+            <tr>
+                <th width="10%">Stool (amount)</th>
+                {{#each outputFlow}}
+                <td>{{stoolamt}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Stool Assessment</th>
+                {{#each outputFlow}}
+                <td>{{stoolass}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Vomitus (mL)</th>
+                {{#each outputFlow}}
+                <td class="vomitus">{{vomitamt}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Vomitus Assessment</th>
+                {{#each outputFlow}}
+                <td>{{vomitass}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Blood (mL)</th>
+                {{#each outputFlow}}
+                <td class="blood">{{bloodamt}}</td>
+                {{/each}}
+            </tr>
+            
+            <tr>
+                <th width="10%">Diaper Weight (mL)</th>
+                {{#each outputFlow}}
+                <td class="diaperWeight">{{diaper}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Other (mL)</th>
+                {{#each outputFlow}}
+                <td class="other">{{otheramt}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">Assessment</th>
+                {{#each outputFlow}}
+                <td style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)">{{otherass}}</td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Nett Balance</th>
+                {{#each outputFlow}}
+                <td class="nettBalance" style="border-bottom: 1px solid rgba(0, 0, 0, 0.12);"></td>
+                {{/each}}
+            </tr>
+            <tr>
+                <th width="10%">Total Balance</th>
+                <td style="border-bottom: 1px solid rgba(0, 0, 0, 0.12); border: 0;" id="totalBalance"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!--Daily Net Balance -->
+
+    <div style="margin-top: 40px;"></div>
+
+    <div class="card-panel purple darken-3 white-text" style="padding: 5px; font-size: 20px; text-align: center">Daily Nett Balance</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="ioRecords" class="hover order-column">
+            {{!-- Header --}}
+            <thead>
+                <tr>
+                    <th>Date</th>                     
+                    <th>Net Balance</th>
+                </tr>
+            </thead>
+            {{!-- Date for the fill --}}
+            <tbody>
+                {{#each dailyBalance}}
+                <tr style="height: 60px">
+                    <td id="date">{{date}}</td>
+                    <td class="netBalance">{{balance}}</td>
+                </tr>
+                {{/each}}
+                <tr>
+                    <th id="dailyTotal">Total: &nbsp;</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+</div>
+<script>
+    // Intake PO
+    var fluidConsumed = document.getElementsByClassName("fluidConsumed");
+    var intakePO = document.getElementsByClassName("intakePO");
+
+    // Intake Enteral
+    var amountOfFeeding = document.getElementsByClassName("amountOfFeeding");
+    var flush = document.getElementsByClassName("flush");
+    var intakeEnteral = document.getElementsByClassName("intakeEnteral");
+
+    // Intake I.V
+    var amountInfusedContinuous = document.getElementsByClassName("amountInfusedContinuous");
+    var amountInfusedIntermittent = document.getElementsByClassName("amountInfusedIntermittent");
+    var ivFlush = document.getElementsByClassName("ivFlush");
+    var intakeIV = document.getElementsByClassName("intakeIV");
+
+    // Output
+    var urine = document.getElementsByClassName("urine");
+    var vomitus = document.getElementsByClassName("vomitus");
+    var blood = document.getElementsByClassName("blood");
+    var diaperWeight = document.getElementsByClassName("diaperWeight");
+    var other = document.getElementsByClassName("other");
+    var outputFlow = document.getElementsByClassName("outputFlow");
+    
+    for (i = 0; i < fluidConsumed.length; i++) { 
+        var totalIntakePO = 0;
+        var totalIntakeEnteral = 0;
+        var totalIntakeIV = 0;
+        var output = 0;
+        
+        // display total intakePO
+        if (!(isNaN(parseInt(fluidConsumed[i].innerHTML)))) 
+        { 
+            totalIntakePO += parseInt(fluidConsumed[i].innerHTML);
+            intakePO[i].innerHTML = totalIntakePO;
+        }
+        // display total intake enteral
+        if (!(isNaN(parseInt(amountOfFeeding[i].innerHTML)))) 
+        { 
+            totalIntakeEnteral += parseInt(amountOfFeeding[i].innerHTML);
+            intakeEnteral[i].innerHTML = totalIntakeEnteral;
+        }
+        if (!(isNaN(parseInt(flush[i].innerHTML)))) 
+        { 
+            totalIntakeEnteral += parseInt(flush[i].innerHTML);
+            intakeEnteral[i].innerHTML = totalIntakeEnteral;
+        }
+        // display total Intake I.V
+        if (!(isNaN(parseInt(amountInfusedContinuous[i].innerHTML)))) 
+        { 
+            totalIntakeIV += parseInt(amountInfusedContinuous[i].innerHTML);
+            intakeIV[i].innerHTML = totalIntakeIV;
+        }
+        if (!(isNaN(parseInt(amountInfusedIntermittent[i].innerHTML)))) 
+        { 
+            totalIntakeIV += parseInt(amountInfusedIntermittent[i].innerHTML);
+            intakeIV[i].innerHTML = totalIntakeIV;
+        }
+        if (!(isNaN(parseInt(ivFlush[i].innerHTML)))) 
+        { 
+            totalIntakeIV += parseInt(ivFlush[i].innerHTML);
+            intakeIV[i].innerHTML = totalIntakeIV;
+        }
+        // display total Output
+        if (!(isNaN(parseInt(urine[i].innerHTML)))) 
+        { 
+            output += parseInt(urine[i].innerHTML);
+            outputFlow[i].innerHTML = output;
+        }
+        if (!(isNaN(parseInt(vomitus[i].innerHTML)))) 
+        { 
+            output += parseInt(vomitus[i].innerHTML);
+            outputFlow[i].innerHTML = output;
+        }
+        if (!(isNaN(parseInt(blood[i].innerHTML)))) 
+        { 
+            output += parseInt(blood[i].innerHTML);
+            outputFlow[i].innerHTML = output;
+        }
+        if (!(isNaN(parseInt(diaperWeight[i].innerHTML)))) 
+        { 
+            output += parseInt(diaperWeight[i].innerHTML);
+            outputFlow[i].innerHTML = output;
+        }
+        if (!(isNaN(parseInt(other[i].innerHTML)))) 
+        { 
+            output += parseInt(other[i].innerHTML);
+            outputFlow[i].innerHTML = output;
+        }
+    }
+
+    // nett balance & total balance
+    var nettBalance = document.getElementsByClassName("nettBalance");
+    var total = 0;
+
+    for (i = 0; i < nettBalance.length; i++)
+    {
+        var totalInput = 0;
+        var totalOutput = 0;
+        // intake PO, intake Enteral, intake I.V, output
+        if (!(isNaN(parseInt(intakePO[i].innerHTML)))) 
+        {
+            totalInput += parseInt(intakePO[i].innerHTML);
+        }
+        if (!(isNaN(parseInt(intakeEnteral[i].innerHTML)))) 
+        {
+            totalInput += parseInt(intakeEnteral[i].innerHTML);
+        }
+        if (!(isNaN(parseInt(intakeIV[i].innerHTML)))) 
+        {
+            totalInput += parseInt(intakeIV[i].innerHTML);
+        }
+        if (!(isNaN(parseInt(outputFlow[i].innerHTML)))) 
+        {
+            totalOutput += parseInt(outputFlow[i].innerHTML);
+        }
+        nettBalance[i].innerHTML = totalInput - totalOutput;
+        total += (totalInput - totalOutput);
+    }
+
+    var totalBalance = document.getElementById("totalBalance");
+    totalBalance.colSpan = nettBalance.length;
+    totalBalance.style.textAlign = "center";
+    totalBalance.innerHTML += total;
+
+
+    //get total
+    // net balance & total balance
+    var nettBalance = document.getElementsByClassName("nettBalance");
+    var total = 0;
+
+    for (i = 0; i < nettBalance.length; i++)
+    {
+        var totalInput = 0;
+        var totalOutput = 0;
+        // intake PO, intake Enteral, intake I.V, output
+        if (!(isNaN(parseInt(intakePO[i].innerHTML)))) 
+        {
+            totalInput += parseInt(intakePO[i].innerHTML);
+        }
+        if (!(isNaN(parseInt(intakeEnteral[i].innerHTML)))) 
+        {
+            totalInput += parseInt(intakeEnteral[i].innerHTML);
+        }
+        if (!(isNaN(parseInt(intakeIV[i].innerHTML)))) 
+        {
+            totalInput += parseInt(intakeIV[i].innerHTML);
+        }
+        if (!(isNaN(parseInt(outputFlow[i].innerHTML)))) 
+        {
+            totalOutput += parseInt(outputFlow[i].innerHTML);
+        }
+        nettBalance[i].innerHTML = totalInput - totalOutput;
+        total += (totalInput - totalOutput);
+    }
+
+    var totalBalance = document.getElementById("dailyTotal");
+    totalBalance.colSpan = nettBalance.length;
+    totalBalance.style.textAlign = "center";
+    totalBalance.innerHTML += total;
+</script>
+
+{{!-- IO code start --}}
+<div id="io">
+<div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">Intake P.O.</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="ioRecords" class="hover order-column">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type of Food</th>
+                    <th>Portion Taken</th>
+                    <th>Type of Fluid Consumed</th>
+                    <th>Fluid Consumed (mL)</th>
+                    {{!-- <th>Patient ID</th> --}}
+                    {{#unless userType}}
+                    <th>Delete</th>
+                    {{/unless}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#if newIO}}
+                    {{#each newIO}}
+                    <tr style="height: 60px">
+                        {{#unless ../userType}}
+                            <td><a href="/master/io/{{ioID}}">{{date}}</a></td>
+                        {{else}}
+                            <td>
+                                {{#ifCond ../currentUserType 'student'}} <!--If currentUserType == "staff", they can't click on a specific records to edit-->
+                                    <a href="/student/io/{{../recordID}}/{{ioID}}">{{date}}</a>
+                                {{else}}
+                                    {{date}}
+                                {{/ifCond}}
+                            </td>
+                        {{/unless}}
+                        <td>{{time}}</td>
+                        <td>{{foodtype}}</td>
+                        <td>{{foodportion}}</td>
+                        <td>{{fluidtype}}</td>
+                        <td>{{fluidportion}}</td>
+                        {{!-- <td>{{patientID}}</td> --}}
+                        {{#unless ../userType}}
+                        <td style="width: 65px"> <!-- the tr we're trying to get -->
+                            <form action="/master/del-io/{{ioID}}?_method=DELETE" method="post" id="delete-form">
+                                <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn red darken-3">
+                                 <i class="material-icons">delete
+                            </button>
+                            </form>
+                        </td>
+                        {{else}}
+                         {{!-- <td style="width: 65px"> <!-- the tr we're trying to get -->
+                            <form action="/master/del-io/{{../recordID}}/{{ioID}}?_method=DELETE" method="post" id="delete-form">
+                                <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn red darken-3">
+                                 <i class="material-icons">delete
+                            </button> --}}
+                            </form>
+                        {{/unless}}
+                    </tr>
+                    {{/each}}
+                {{else}}
+                <p id="noRecord">You have not created any vital records yet</p>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+    </div>
+
+    {{#if editIO}}
+        {{#unless userType}}
+        <form action="/master/edit-io/{{editIO.ioID}}?_method=PUT" method="POST" id="editIO">
+        {{else}}    
+        <form action="/student/edit-io/{{recordID}}/{{editIO.ioID}}?_method=PUT" method="POST" id="editIO">
+        {{/unless}}
+    {{!-- <input type="hidden" name="_method" value="PUT"> --}}
+    {{else}}
+        {{#unless userType}}
+        <form action="/master/add-io" method="POST" id="addIO">
+        {{else}}
+        <form action="/student/add-io/{{recordID}}" method="POST" id="addIO">
+        {{/unless}}
+    {{/if}}
+        <div class="card purple lighten-5">
+            <div class="card-content">
+                <div id="ioInfo">
+                    <span class="purple-text darken-2">Intake P.O. Details</span>
+
+                <div class="row">
+                        <div class="col s12 m4 input-field">
+                            <input id="dateIO" type="text" class="datepicker" name="dateIO" value="{{editIO.date}}" required>
+                            <label for="dateIO">Date</label>
+                            <span class="helper-text">dd/mm/yyyy</span>
+                        </div>
+
+                        <div class="col s12 m4 input-field">
+                            <input id="timeIO" type="text" class="timepicker" name="timeIO" value="{{editIO.time}}" required>
+                            <label for="timeIO">Time</label>
+                            <span class="helper-text">hh:ss</span>
+                        </div>
+
+                        <div class="col s12 m4 input-field">
+                            <input id="foodtype" type="text" name="foodtype" value="{{editIO.foodtype}}">
+                            <label for="foodtype">Food</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col s12 m4 input-field">
+                            <select id="foodportion" name="foodportion">
+                                <option value="" disabled selected>Portion Taken</option>
+                                <option value="1 Share">1 Share</option>
+                                <option value="3 Quarters">3 Quarters</option>
+                                <option value="2 Thirds">2 Thirds</option>
+                                <option value="Half Share">Half Share</option>
+                                <option value="1 Third">1 Third</option>
+                                <option value="1 Quarter">1 Quarter</option>
+                                <option value="A Few Spoonfuls">A Few Spoonfuls</option>
+
+                            </select>
+                     <label for="Portion">Portion</label>
+
+                    </div>
+                    
+                        <div class="col s12 m4 input-field">
+                            <input id="fluidtype" type="text" name="fluidtype" value="{{editIO.fluidtype}}">
+                            <label for="fluidtype">Fluid Type</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m4 input-field">
+                            <input id="fluidportion" type="number" name="fluidportion" value="{{editIO.fluidportion}}">
+                            <label for="floodportion">Fluid Consumed (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                </div>
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+
+        <div class="col s12 m4">
+            {{#if editIO}}
+                <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editIO">Save Changes
+            {{else}}
+                <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addIO">Save
+            {{/if}}
+            {{#unless userType}}
+                <i class="material-icons right">send</i>
+                {{else}}
+                <i class="material-icons right">send</i>
+            {{/unless}}
+        </div>
+    </div>
+</div>
+
+{{!-- IO code end --}}
+
+
+{{!-- intake enteral code start --}}
+
+<div id="enteral">
+<div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">Intake Enteral</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="enteralRecords" class="hover order-column" >
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Enteral Feeding</th>
+                    <th>Type of Formula</th>
+                    <th>Amount of Feeding (mL)</th>
+                    <th>Fluid Consumed (mL)</th>
+                    {{!-- <th>Patient ID</th> --}}
+                    {{#unless userType}}
+                    <th>Delete</th>
+                    {{!-- {{else}}
+                    <th>Delete</th> --}}
+                    {{/unless}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#if newenteral}}
+                    {{#each newenteral}}
+                    <tr style="height: 60px">
+                        {{#unless ../userType}}
+                            <td><a href="/master/enteral/{{enteralID}}">{{date}}</a></td>
+                        {{else}}
+                            <td>
+                                {{#ifCond ../currentUserType 'student'}} <!--If currentUserType == "staff", they can't click on a specific records to edit-->
+                                    <a href="/student/enteral/{{../recordID}}/{{enteralID}}">{{date}}</a>
+                                {{else}}
+                                    {{date}}
+                                {{/ifCond}}
+                            </td>
+                        {{/unless}}
+                        <td>{{time}}</td>
+                        <td>{{enteralfeed}}</td>
+                        <td>{{formula}}</td>
+                        <td>{{feedamt}}</td>
+                        <td>{{flush}}</td>
+                        {{!-- <td>{{patientID}}</td> --}}
+                        {{#unless ../userType}}
+                            <td style="width: 65px"> <!-- the tr we're trying to get -->
+                                <form action="/master/del-enteral/{{enteralID}}?_method=DELETE" method="post" id="delete-form">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn red darken-3">
+                                    <i class="material-icons">delete
+                                </button>
+                                </form>
+                            </td>
+                        {{else}}
+                            {{!-- <td style="width: 65px"> <!-- the tr we're trying to get -->
+                                <form action="/student/del-enteral/{{../recordID}}/{{enteralID}}?_method=DELETE" method="post" id="delete-form">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn red darken-3">
+                                    <i class="material-icons">delete
+                                </button>
+                                </form>
+                            </td> --}}
+                        {{/unless}}
+                    </tr>
+                    {{/each}}
+                {{else}}
+                <p id="noRecord">You have not created any Enteral records yet</p>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+
+    </div>
+
+    {{#if editenteral}}
+        {{#unless userType}}
+        <form action="/master/edit-enteral/{{editenteral.enteralID}}?_method=PUT" method="POST" id="editenteral">
+        {{else}}
+        <form action="/student/edit-enteral/{{recordID}}/{{editenteral.enteralID}}?_method=PUT" method="POST" id="editenteral">
+        {{/unless}}
+    {{!-- <input type="hidden" name="_method" value="PUT"> --}}
+    {{else}}
+        {{#unless userType}}
+            <form action="/master/add-enteral" method="POST" id="addenteral">
+            {{else}}
+            <form action="/student/add-enteral/{{recordID}}" method="POST" id="addenteral">
+        {{/unless}}
+    {{/if}}
+        <div class="card purple lighten-5">
+            <div class="card-content">
+                <div id="enteralInfo">
+                    <span class="purple-text darken-2">Intake Enteral</span>
+
+                <div class="row">
+                        <div class="col s12 m4 input-field">
+                            <input id="dateenteral" type="text" class="datepicker" name="dateenteral" value="{{editenteral.date}}" required>
+                            <label for="dateenteral">Date</label>
+                            <span class="helper-text">dd/mm/yyyy</span>
+                        </div>
+
+                        <div class="col s12 m4 input-field">
+                            <input id="timeenteral" type="text" class="timepicker" name="timeenteral" value="{{editenteral.time}}" required>
+                            <label for="timeenteral">Time</label>
+                            <span class="helper-text">hh:ss</span>
+                        </div>
+
+                       <div class="col s12 m4 input-field">
+                            <select id="enteralfeed" name="enteralfeed">
+                            <option value="" disabled selected>Enteral Feed</option>
+                            <option value="NG">NG</option>
+                            <option value="NJ">NJ</option>
+                            <option value="PEG">PEG</option>
+                            <option value="PEJ">PEJ</option>
+                            </select>
+                            <label for="enteralfeed">Enteral Feed</label>
+                        </div>                        
+
+                </div>
+
+                <div class="row">
+
+                            <div class="col s12 m4 input-field">
+
+                                <select id="formula" name="formula">
+                                    <option value="" disabled selected>Type of Formula</option>
+                                    <option value="ensure">Ensure</option>
+                                    <option value="Ensure Life">Ensure Life</option>                                
+                                    <option value="Ensure Plus">Ensure Plus</option>
+                                    <option value="Isocal">Isocal</option>
+                                    <option value="Resource Support">Resource Support</option>
+                                    <option value="Resource 2.0"> Resource 2.0</option>
+                                    <option value="Glucerna">Glucerna</option>
+                                    <option value="Nepro">Nepro</option>
+                                    <option value="Suplena">Suplen</option>
+                                    <option value="Pulmocare">Pulmocare</option>
+                                    <option value="Jevity">Jevity</option>                                                                
+                                    <option value="Oxepa">Oxepa</option>
+                                    <option value="Prosure">Prosure</option>
+                                    <option value="Propass">Propass</option>
+                                </select>
+                                    <label for="formula">Type of Formula</label>
+
+                             </div>
+
+                    
+                        <div class="col s12 m4 input-field">
+                            <input id="feedamt" type="number" name="feedamt" value="{{editenteral.feedamt}}">
+                            <label for="feedamt">Amount of feeding (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m4 input-field">
+                            <input id="flush" type="number" name="flush" value="{{editenteral.flush}}">
+                            <label for="flush">Water for Flush (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                </div>
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+        <div class="col s12 m4">
+            {{#if editenteral}}
+                <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editenteral">Save Changes
+            {{else}}
+           
+                <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addenteral">Save
+            {{/if}}
+            {{#unless userType}}
+                <i class="material-icons right">send</i>
+                {{else}}
+                <i class="material-icons right">send</i>
+            {{/unless}}
+            </button>
+            
+        </div>
+        {{!-- <div class="col s12 m4">
+            {{#if editenteral}}
+            <button class="btn waves-effect waves-light" style="width: 150px; float:right;" type="submit" form="editenteral">Save
+            {{else}}
+            {{#unless userType}}
+            <button class="btn waves-effect waves-light" style="width: 150px; float:right;" type="submit" form="addenteral">Save
+            {{/unless}}
+            {{/if}}
+            {{#unless userType}}
+                <i class="material-icons right">send</i>
+            </button>
+            {{/unless}}
+        </div> --}}
+    </div>
+</div>
+
+{{!-- end Enteral Code --}}
+
+
+
+{{!-- IV code start --}}
+
+<div id="iv">
+<div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">Intake I.V</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="ivRecords" class="hover order-column" >
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type of I.V Infusion (continuous)</th>
+                    <th>Amount Infused (continuous)</th>
+                    <th>Type of I.V. Infusion (intermittent)</th>
+                    <th>Amount Infused (intermittent)</th>
+                    <th>I.V Flush (mL)</th>
+                    {{!-- <th>Patient ID</th> --}}
+                    {{#unless userType}}
+                    <th>Delete</th>
+                    {{/unless}}
+                </tr>
+            </thead>
+
+            <tbody>
+                {{#if newiv}}
+                    {{#each newiv}}
+                    <tr style="height: 60px">
+                        {{#unless ../userType}}
+                        <td><a href="/master/iv/{{ivID}}">{{date}}</a></td>
+                        {{else}}
+                            <td>
+                                {{#ifCond ../currentUserType 'student'}} <!--If currentUserType == "staff", they can't click on a specific records to edit-->
+                                    <a href="/student/iv/{{../recordID}}/{{ivID}}">{{date}}</a>
+                                {{else}}
+                                    {{date}}
+                                {{/ifCond}}
+                            </td>
+                        {{/unless}}
+                        <td>{{time}}</td>
+                        <td>{{coninf}}</td>
+                        <td>{{conamt}}</td>
+                        <td>{{intinf}}</td>
+                        <td>{{amtinf}}</td>
+                        <td>{{ivflush}}</td>
+                        {{!-- <td>{{patientID}}</td> --}}
+                        {{#unless ../userType}}          
+                        <td style="width: 65px"> <!-- the tr we're trying to get -->
+                            <form action="/master/del-iv/{{ivID}}?_method=DELETE" method="post" id="delete-form">
+                                <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn red darken-3">
+                                 <i class="material-icons">delete
+                            </button>
+                            </form>
+                        </td>
+                        {{else}}
+                            {{!-- <td style="width: 65px"> <!-- the tr we're trying to get -->
+                                <form action="/student/del-iv/{{../recordID}}/{{ivID}}?_method=DELETE" method="post" id="delete-form">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn red darken-3">
+                                    <i class="material-icons">delete
+                                </button>
+                                </form>
+                            </td> --}}
+                        {{/unless}}
+                    </tr>
+                    {{/each}}
+                {{else}}
+                <p id="noRecord">You have not created any IV records yet</p>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+    </div>
+
+    {{#if editiv}}
+        {{#unless userType}}
+        <form action="/master/edit-iv/{{editiv.ivID}}?_method=PUT" method="POST" id="editiv">
+        {{else}}
+        <form action="/student/edit-iv/{{recordID}}/{{editiv.ivID}}?_method=PUT" method="POST" id="editiv">
+        {{/unless}}
+        {{else}}
+    {{!-- <input type="hidden" name="_method" value="PUT"> --}}
+        {{#unless userType}}
+            <form action="/master/add-iv" method="POST" id="addiv">
+        {{else}}
+            <form action="/student/add-iv/{{recordID}}" method="POST" id="addiv">
+        {{/unless}}
+    {{/if}}
+        <div class="card purple lighten-5">
+            <div class="card-content">
+                <div id="ivInfo">
+                    <span class="purple-text darken-2">Intake IV</span>
+
+                <div class="row">
+                        <div class="col s12 m4 input-field">
+                            <input id="dateiv" type="text" class="datepicker" name="dateiv" value="{{editiv.date}}" required>
+                            <label for="dateiv">Date</label>
+                            <span class="helper-text">dd/mm/yyyy</span>
+                        </div>
+
+                        <div class="col s12 m4 input-field">
+                            <input id="timeiv" type="text" class="timepicker" name="timeiv" value="{{editiv.time}}" required>
+                            <label for="timeiv">Time</label>
+                            <span class="helper-text">hh:ss</span>
+                        </div>
+
+                       <div class="col s12 m4 input-field">
+                            <select id="coninf" name="coninf">
+                            <option value="" disabled selected>Type of I.V Infusion (continuous)</option>
+                            <option value="10% Mannitol">10% Mannitol</option>
+                            <option value="20% Mannitol">20% Mannitol</option>
+                            <option value="Dextrose 10% in water (D10W)">Dextrose 10% in water (D10W)</option>
+                            <option value="Dextrose 5% with 10 mmol KCl per 500 ml">Dextrose 5% with 10 mmol KCl per 500 ml</option>
+                            <option value="Dextrose 5% in 0.22% NaCl with 10 mmol KCl per 500 ml">Dextrose 5% in 0.22% NaCl with 10 mmol KCl per 500 ml</option>
+                            <option value="Dextrose 5% in 0.22% Sodium Chloride (D5 1/4 NS)">Dextrose 5% in 0.22% Sodium Chloride (D5 1/4 NS)</option>
+                            <option value="Dextrose 5% in 0.45% NaCl with 10 mmol KCl per 500 ml">Dextrose 5% in 0.45% NaCl with 10 mmol KCl per 500 ml</option>
+                            <option value="Dextrose 5% in 0.45% Sodium Chloride (D5 1/2 NS)">Dextrose 5% in 0.45% Sodium Chloride (D5 1/2 NS)</option>
+                            <option value="Dextrose 5% in 0.9% NaCl with 10 mmol KCl per 500 ml">Dextrose 5% in 0.9% NaCl with 10 mmol KCl per 500 ml</option>    
+                            <option value="Dextrose 5% in 0.9% Sodium Chloride (D5 NS)">Dextrose 5% in 0.9% Sodium Chloride (D5 NS)</option>
+                            <option value="Dextrose 5% in lactated ringer's (D5W)">Dextrose 5% in lactated ringer's (D5W)</option>
+                            <option value="Dextrose 5% in water (D5W)">Dextrose 5% in water (D5W)</option>    
+                            <option value="Gelofusine (Succinylated gelatin solution 4%)">Gelofusine (Succinylated gelatin solution 4%)</option>
+                            <option value="Haemaccel">Haemaccel</option>
+                            <option value="Hartmann’s solution">Hartmann’s Solution</option>   
+                            <option value="Lactated ringer's (LR) injection">Lactated ringer's (LR) injection</option>
+                            <option value="Sodium Chloride 0.22% (1/4 NS)">Sodium Chloride 0.22% (1/4 NS)</option>
+                            <option value="Sodium Chloride 0.45% (1/2 NS)">Sodium Chloride 0.45% (1/2 NS)</option>    
+                            <option value="Sodium Chloride 0.45% with 10 mmol KCl per 500 ml">Sodium Chloride 0.45% with 10 mmol KCl per 500 ml</option>
+                            <option value="Sodium Chloride 0.9% ( NS)">Sodium Chloride 0.9% ( NS)</option>
+                            <option value="Sodium Chloride 0.9% with 10 mmol KCl per 500 ml">Sodium Chloride 0.9% with 10 mmol KCl per 500 ml</option>    
+                            <option value="Sodium Chloride 3%">Sodium Chloride 3%</option>
+                            <option value="Total Parenteral Nutrition (Adult) Inf">Total Parenteral Nutrition (Adult) Inf</option>
+                            <option value="Total Parenteral Nutrition (Neonate) Inf">Total Parenteral Nutrition (Neonate) Inf</option> 
+                            <option value="Total Parenteral Nutrition (Paediatric) Inf">Total Parenteral Nutrition (Paediatric) Inf (Special)</option>
+                            <option value="Total Parenteral Nutrition (Paediatric) Inf (Special)">Total Parenteral Nutrition Standard 1 Inf</option>
+                            <option value="Total Parenteral Nutrition Standard 1 Inf">Total Parenteral Nutrition Standard 2 Inf</option>
+                            <option value="Total Parenteral Nutrition Starter (Neonate) Inf">Total Parenteral Nutrition Starter (Neonate) Inf</option>
+                            <option value="Blood Product: Packed Cells">Blood Product: Packed Cells</option>
+                            </select>
+                            <label for="coninf">Type of I.V Infusion (continuous)</label>
+                        </div>                        
+
+                </div>
+                <div class="row">
+
+                        <div class="col s12 m3 input-field">
+                            <input id="conamt" type="number" name="conamt" value="{{editiv.conamt}}">
+                            <label for="conamt">Amount infused (continuous)</label>
+                            <span class="helper-text"></span>
+                        </div>
+                    
+                        <div class="col s12 m3 input-field">
+                            <input id="intinf" type="text" name="intinf" value="{{editiv.intinf}}">
+                            <label for="intinf">Type of I.V. Infusion (intermittent)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m3 input-field">
+                            <input id="amtinf" type="number" name="amtinf" value="{{editiv.amtinf}}">
+                            <label for="amtinf">Amount infused (intermittent)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m3 input-field">
+                            <input id="ivflush" type="number" name="ivflush" value="{{editiv.ivflush}}">
+                            <label for="ivflush">I.V. Flush (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                </div>
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+
+        <div class="col s12 m8"></div>
+
+        <div class="col s12 m4">
+            {{#if editiv}}
+            <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editiv">Save Changes
+            {{else}}
+            
+            <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addiv">Save
+            {{/if}}
+            {{#unless userType}}
+                <i class="material-icons right">send</i>
+                {{else}}
+                <i class="material-icons right">send</i>
+            {{/unless}}
+            </button>
+        </div>
+    </div>
+
+</div>
+
+{{!-- IV code ends here --}}
+
+
+
+{{!-- Output code starts here  --}}
+
+
+<div id="output">
+<div class="card-panel purple darken-3 white-text" style="padding:5px; font-size: 20px">Output</div>
+    <div style="overflow-x:auto; max-height: 16em;">
+        <table id="outputRecords" class="hover order-column" >
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Urine (mL)</th>
+                    <th>Urine Assessment</th>
+                    <th>Stool (amount)</th>
+                    <th>Stool Assessment</th>
+                    <th>Vomitus (mL)</th>
+                    <th>Vomitus Assessment</th>
+                    <th>Blood (mL)</th>
+                    <th>Diaper Weight (mL)</th>
+                    <th>Other (mL) </th>
+                    <th>Assessment </th>
+                    {{!-- <th>Patient ID</th> --}}
+                    {{#unless userType}}
+                    <th>Delete</th>
+                    {{/unless}}
+                </tr>
+            </thead>
+
+            <tbody>
+                {{#if newoutput}}
+                    {{#each newoutput}}
+                    <tr style="height: 60px">
+                        {{#unless ../userType}}
+                        <td><a href="/master/output/{{outputID}}">{{date}}</a></td>
+                        {{else}}
+                            <td>
+                                {{#ifCond ../currentUserType 'student'}} <!--If currentUserType == "staff", they can't click on a specific records to edit-->
+                                    <a href="/student/output/{{../recordID}}/{{outputID}}">{{date}}</a>
+                                {{else}}
+                                    {{date}}
+                                {{/ifCond}}
+                            </td>
+                        {{/unless}}
+                        <td>{{time}}</td>
+                        <td>{{urineamt}}</td>
+                        <td>{{urineass}}</td>
+                        <td>{{stoolamt}}</td>
+                        <td>{{stoolass}}</td>
+                        <td>{{vomitamt}}</td>
+                        <td>{{vomitass}}</td>
+                        <td>{{bloodamt}}</td>
+                        <td>{{diaper}}</td>
+                        <td>{{otheramt}}</td>
+                        <td>{{otherass}}</td>
+                        {{!-- <td>{{patientID}}</td> --}}
+                        {{#unless ../userType}}
+                        <td style="width: 65px"> <!-- the tr we're trying to get -->
+                            <form action="/master/del-output/{{outputID}}?_method=DELETE" method="post" id="delete-form">
+                                <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn red darken-3">
+                                 <i class="material-icons">delete
+                            </button>
+                            </form>
+                        </td>
+                        {{else}}
+                            {{!-- <td style="width: 65px"> <!-- the tr we're trying to get -->
+                                <form action="/student/del-output/{{../recordID}}/{{outputID}}?_method=DELETE" method="post" id="delete-form">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn red darken-3">
+                                    <i class="material-icons">delete
+                                </button>
+                                </form>
+                            </td> --}}
+                        {{/unless}}
+                    </tr>
+                    {{/each}}
+                {{else}}
+                <p id="noRecord">You have not created any Output records yet</p>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col s12 m8"></div>
+    </div>
+
+    {{#if editoutput}}
+        {{#unless userType}}
+        <form action="/master/edit-output/{{editoutput.outputID}}?_method=PUT" method="POST" id="editoutput">
+        {{else}}
+        <form action="/student/edit-output/{{recordID}}/{{editoutput.outputID}}?_method=PUT" method="POST" id="editoutput">
+        {{/unless}}
+    {{!-- <input type="hidden" name="_method" value="PUT"> --}}
+    {{else}}
+        {{#unless userType}}
+            <form action="/master/add-output" method="POST" id="addoutput">
+            {{else}}
+            <form action="/student/add-output/{{recordID}}" method="POST" id="addoutput">
+        {{/unless}}
+    {{/if}}
+        <div class="card purple lighten-5">
+            <div class="card-content">
+                <div id="outputInfo">
+                    <span class="purple-text darken-2">Output </span>
+
+                <div class="row">
+                        <div class="col s12 m6 input-field">
+                            <input id="dateoutput" type="text" class="datepicker" name="dateoutput" value="{{editoutput.date}}" required>
+                            <label for="dateoutput">Date</label>
+                            <span class="helper-text">dd/mm/yyyy</span>
+                        </div>
+
+                        <div class="col s12 m6 input-field">
+                            <input id="timeoutput" type="text" class="timepicker" name="timeoutput" value="{{editoutput.time}}" required>
+                            <label for="timeoutput">Time</label>
+                            <span class="helper-text">hh:ss</span>
+                        </div>
+                </div>
+
+                <div class="row">
+
+                        <div class="col s12 m3 input-field">
+                            <input id="urineamt" type="number" name="urineamt" value="{{editoutput.urineamt}}">
+                            <label for="urineamt">Urine (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+                    
+                        <div class="col s12 m3 input-field">
+                            <input id="urineass" type="text" name="urineass" value="{{editoutput.urineass}}">
+                            <label for="urineass">Urine Assessment</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m3 input-field">
+                            <input id="stoolamt" type="text" name="stoolamt" value="{{editoutput.stoolamt}}">
+                            <label for="stoolamt">Stool (amount)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s10 m2 input-field">
+                            <input id="stoolass" type="text" name="stoolass" value="{{editoutput.stoolass}}">
+                            <label for="stoolass">Stool Assessment</label>
+                            <span class="helper-text"></span>
+                        </div>
+                        <div class="col s10 m1 input-field">
+                            <a class="waves-effect waves-light btn modal-trigger" href="#bristolStoolChart">
+                                <i class="fa fa-info fa-lg" aria-hidden="true"></i>
+                            </a>
+                            <div id="bristolStoolChart" class="modal">
+                                <div class="modal-content">
+                                <p>
+                                    <div style="overflow-x:auto; max-height: 50em;">
+                                        <img class="materialboxed" id="ordersImage" style="display: block;margin-left: auto;margin-right: auto; max-height: 30em; min-height: 30em;" src="/assets/img/bristol-stool-chart.jpeg">
+                                    </div>
+                                </p>
+                                </div>
+                                <div class="modal-footer">
+                                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="row">
+
+                        <div class="col s12 m3 input-field">
+                            <input id="vomitamt" type="number" name="vomitamt" value="{{editoutput.vomitamt}}">
+                            <label for="vomitamt">Vomitus (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+                    
+                        <div class="col s12 m3 input-field">
+                            <input id="vomitass" type="text" name="vomitass" value="{{editoutput.urineass}}">
+                            <label for="vomitass">Vomitus Assessment</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m3 input-field">
+                            <input id="bloodamt" type="number" name="bloodamt" value="{{editoutput.bloodamt}}">
+                            <label for="bloodamt">Blood (mL)</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+                        <div class="col s12 m3 input-field">
+                            <input id="diaper" type="number" name="diaper" value="{{editoutput.diaper}}">
+                            <label for="diaper">Diaper Weight (mL) </label>
+                            <span class="helper-text"></span>
+                        </div>
+                 </div>
+
+                <div class="row">
+
+                        <div class="col s12 m3 input-field">
+                            <input id="otheramt" type="number" name="otheramt" value="{{editoutput.otheramt}}">
+                            <label for="otheramt">Other (mL) </label>
+                            <span class="helper-text"></span>
+                        </div>
+                    
+                        <div class="col s12 m3 input-field">
+                            <input id="otherass" type="text" name="otherass" value="{{editoutput.otherass}}">
+                            <label for="otherass">Assessment</label>
+                            <span class="helper-text"></span>
+                        </div>
+
+
+                </div>                
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+
+        <div class="col s12 m8"></div>
+
+        <div class="col s12 m4">
+            {{#if editoutput}}
+            <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="editoutput">Save Changes
+            {{else}}
+            <button class="btn waves-effect waves-light saveButton" style="width: 150px; float:right;" type="submit" form="addoutput">Save
+            {{/if}}
+            {{#unless userType}}
+                <i class="material-icons right">send</i>
+                {{else}}
+                <i class="material-icons right">send</i>
+            {{/unless}}
+        </div>
+    </div>
+
+</div>
+
+{{!-- Output code ends here --}}
+
+
+<script
+		src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous">
+</script>
+
+<script>
+
+    $(document).ready(() => {
+        $('.tabs').tabs();
+    })
+
+        document.addEventListener('DOMContentLoaded', () => {
+        //IO
+        const dateIO = document.querySelector('#dateIO');
+        const timeIO = document.querySelector('#timeIO');
+        const foodportion = document.querySelector('#foodportion');
+
+        //Enteral
+        const dateenteral = document.querySelector('#dateenteral');
+        const timeenteral = document.querySelector('#timeenteral');
+        const enteralfeed = document.querySelector('#enteralfeed');
+        const formula = document.querySelector('#formula');
+
+        //IV
+        const dateiv = document.querySelector('#dateiv');
+        const timeiv = document.querySelector('#timeiv');
+        const coninf = document.querySelector('#coninf');
+
+        //Output
+        const dateoutput = document.querySelector('#dateoutput');
+        const timeoutput = document.querySelector('#timeoutput');
+
+        //Img
+        const elems = document.querySelectorAll('.materialboxed');
+        const instances = M.Materialbox.init(elems, {});
+
+        //IO Instances
+                M.Datepicker.init(dateIO, {
+                    maxDate: new Date(),
+                    format: 'dd/mm/yyyy',
+                    disableWeekends: true
+                });
+                M.Timepicker.init(timeIO, {
+                    twelveHour: false,
+                    showClearBtn: true
+                });
+
+                M.FormSelect.init(foodportion, {
+                    
+                })
+
+
+
+        //Enteral Instances
+                M.Datepicker.init(dateenteral, {
+                    maxDate: new Date(),
+                    format: 'dd/mm/yyyy',
+                    disableWeekends: true
+                });
+                M.Timepicker.init(timeenteral, {
+                    twelveHour: false,
+                    showClearBtn: true
+                });
+
+                M.FormSelect.init(enteralfeed, {
+                    
+                })
+                
+                M.FormSelect.init(formula, {
+                    
+                })
+
+        //IV Instances
+                M.Datepicker.init(dateiv, {
+                    maxDate: new Date(),
+                    format: 'dd/mm/yyyy',
+                    disableWeekends: true
+                });
+                M.Timepicker.init(timeiv, {
+                    twelveHour: false,
+                    showClearBtn: true
+                });
+
+                M.FormSelect.init(coninf, {
+                    
+                })       
+
+                
+        //Output Instances
+                M.Datepicker.init(dateoutput, {
+                    maxDate: new Date(),
+                    format: 'dd/mm/yyyy',
+                    disableWeekends: true
+                });
+
+                M.Timepicker.init(timeoutput, {
+                    twelveHour: false,
+                    showClearBtn: true
+                });
+                 
+        })
+
+
+    {{#if editIO}}
+        document.getElementById('foodportion').value = "{{editIO.foodportion}}";
+        document.getElementById('ioflowTab').className += " disabled";
+        document.getElementById('enttab').className += " disabled";
+        document.getElementById('ivtab').className += " disabled";
+        document.getElementById('outtab').className += " disabled";
+        document.getElementById('tab1').className += " active";
+    {{/if}}
+
+    {{#if editenteral}}
+        document.getElementById('formula').value = "{{editenteral.formula}}";
+        document.getElementById('enteralfeed').value = "{{editenteral.enteralfeed}}";
+        document.getElementById('ioflowTab').className += " disabled";
+        document.getElementById('ivtab').className += " disabled";
+        document.getElementById('outtab').className += " disabled";
+        document.getElementById('iotab').className += " disabled";
+        document.getElementById('tab2').className += " active";
+    {{/if}}
+
+    {{#if editiv}}
+        document.getElementById('coninf').value = "{{editiv.coninf}}";
+        document.getElementById('ioflowTab').className += " disabled";
+        document.getElementById('outtab').className += " disabled";
+        document.getElementById('iotab').className += " disabled";
+        document.getElementById('enttab').className += " disabled";
+        document.getElementById('tab3').className += " active";
+    {{/if}}
+
+    {{#if editoutput}}
+        document.getElementById('ioflowTab').className += " disabled";
+        document.getElementById('iotab').className += " disabled";
+        document.getElementById('enttab').className += " disabled";
+        document.getElementById('ivtab').className += " disabled";
+        document.getElementById('tab4').className += " active";
+    {{/if}}    
+
+    // modal
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, {});
+    });
+      
+    if ("{{currentUserType}}" == "staff")
+    {
+        $(".saveButton").hide();
+    }
+    else
+    {
+        $(".saveButton").show();
+    }
+
+
+ </script>

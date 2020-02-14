@@ -1,0 +1,195 @@
+<!-- CARD WITH TITLE -->
+<div class="card red lighten-4">
+	<div class="card-content">
+		<div id="pain" class="section scrollspy">
+			<span class="card-title blue-text darken-5">Pain Assessment</span>
+
+			{{!--Comfort ==================================================================================== --}}
+			<div class="row" style="padding-top:20px">
+				<div class="col s12 m2 l2" >
+					<label style="font-size: 15px">Pain present</label>
+				</div>
+
+				<div class="col s12 m2 l4">
+					<label>
+						<input id="painPresent" name="painPresent" type="radio" value="true"
+							{{ setRadioButton assessment.painPresent true }}/>
+						<span style="padding-left: 25px; padding-right: 10px">Yes (inform doctor)</span>
+					</label>
+					<label>
+						<input id="painAbsent" name="painPresent" type="radio" value="false"
+							{{ setRadioButton assessment.painPresent false }}/>
+						<span style="padding-left: 25px; padding-right: 10px">No</span>
+					</label>
+				</div>
+
+				<div class="col s12 m1 l1">
+					<label style="font-size: 15px">Pain scale</label>
+				</div>
+				
+				<div class="col s12 m2 l5">
+					<label>
+						<input id="painScale" name="painScale" type="radio" value="Numeric"
+							{{checked assessment.painScale 'Numeric'}}/>
+						<span style="padding-left: 25px; padding-right: 10px">Numeric</span>
+					</label>
+					<label>
+						<input id="painScale" name="painScale" type="radio" value="Faces"
+							{{checked assessment.painScale 'Faces'}}/>
+						<span style="padding-left: 25px; padding-right: 10px">Faces</span>
+					</label>
+					<label>
+						<input id="painScale" name="painScale" type="radio" value="FLAAC"
+							{{checked assessment.painScale 'FLAAC'}}/>
+						<span style="padding-left: 25px; padding-right: 10px">FLAAC</span>
+					</label>
+				</div>
+			</div>
+
+			
+		<div class="row" style="padding-top:6px">
+			<div class="col s12 m2 l2" >
+					<label style="font-size: 15px; margin-top:100px;">Pain Score</label>
+				</div>
+
+				<div class="col s12 m2 l1 input-field">
+					<select id="painScore" name="painScore">
+                                {{!-- <option value="" disabled selected></option> --}}
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                    </select>
+				</div>
+				  {{!-- <div class="input-field col s12">
+    <select>
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </select>
+    <label>Materialize Select</label>
+  </div> --}}
+
+
+		</div>
+
+			
+			{{!-- Onset ==================================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Onset</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="onset" name="onset" type="text" value="{{assessment.onset}}"/>
+						<label for="onset">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+
+			{{!-- Location ==================================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Location</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="location" name="location" type="text" value="{{assessment.location}}"/>
+						<label for="location">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+			{{!-- Duration ==================================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Duration</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="duration" name="duration" type="text" value="{{assessment.duration}}"/>
+						<label for="duration">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+
+			{{!-- Characteristic ==================================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Characteristic</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="characteristic" name="characteristic" type="text" value="{{assessment.characteristic}}"/>
+						<label for="characteristic">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+
+			{{!-- Associated Symptoms =========================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Associated Symptoms</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="symptoms" name="symptoms" type="text" value="{{assessment.symptoms}}"/>
+						<label for="symptoms">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+
+			{{!-- Relieving/Aggravating Factors ==================================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Relieving/Aggravating Factors</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="factors" name="factors" type="text" value="{{assessment.factors}}"/>
+						<label for="factors">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+
+			{{!-- Treatment ==================================================================================== --}}
+			<div class="row">
+				<div class="col s12 m2 l2" style="padding-top:20px">
+					<label style="font-size: 15px">Treatment</label>
+				</div>
+				<div class="col s12 m10 l10" >
+					<div class="input-field">
+						<input id="treatment" name="treatment" type="text" value="{{assessment.treatment}}"/>
+						<label for="treatment">Describe</label>
+						<span class="helper-text"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		
+		const painScore = document.querySelector('#painScore');
+
+        M.FormSelect.init(painScore, {
+            
+        });	
+	})
+
+	document.getElementById('painScore').value = "{{assessment.painScore}}";
+</script>
